@@ -1,0 +1,899 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aqua Esmeralda Beach Club - Reservas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ccefff, #f0faff);
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        header {
+            font-size: 2.6rem;
+            font-weight: 700;
+            color: #05668d;
+            margin: 1.5rem 0 0.5rem 0;
+            user-select: none;
+            text-align: center;
+        }
+
+        .date-container {
+            margin: 0.5rem 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .date-container label {
+                font-weight: 600;
+                color: #034a61;
+            }
+
+            .date-container input {
+                padding: 8px 12px;
+                border-radius: 8px;
+                border: 1px solid #a1c3d1;
+                font-family: 'Inter', sans-serif;
+                font-size: 1rem;
+            }
+
+        main {
+            width: 100%;
+            max-width: 680px;
+            padding: 0 20px 60px 20px;
+        }
+
+        /* Pestañas (botones acordeón) */
+        section {
+            margin-bottom: 1.8rem;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 8px 14px rgba(0,0,0,0.07);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+            section.expanded {
+                box-shadow: 0 14px 30px rgba(5, 102, 141, 0.3);
+            }
+
+        .accordion-btn {
+            width: 100%;
+            background: #0487a0;
+            color: white;
+            border: none;
+            padding: 18px 24px;
+            font-size: 1.35rem;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            border-radius: 12px;
+            transition: background-color 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s ease;
+            will-change: transform, box-shadow;
+        }
+
+            .accordion-btn:hover,
+            .accordion-btn:focus {
+                background-color: #036b80;
+                transform: scale(1.03);
+                box-shadow: 0 6px 14px rgba(3,107,128,0.5);
+                outline: none;
+            }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+        }
+        /* Número reservas */
+        .count {
+            min-width: 28px;
+            height: 28px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            background: #ef476f;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            pointer-events: none;
+            box-shadow: 0 0 10px #ef476faa;
+            margin-left: 12px;
+            flex-shrink: 0;
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* Contenido del acordeón con animación más fluida */
+        .content {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease, transform 0.35s ease;
+            background: #f7fcff;
+            border-radius: 0 0 12px 12px;
+            padding: 0 24px;
+        }
+
+            .content.active {
+                max-height: 800px;
+                opacity: 1;
+                transform: translateY(0);
+                padding-top: 18px;
+                padding-bottom: 25px;
+                box-shadow: inset 0 2px 8px rgba(5, 102, 141, 0.1);
+            }
+
+        /* Tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        thead {
+            background: #036b80;
+            color: white;
+        }
+
+        th, td {
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        tbody tr {
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: inset 0 0 0 0 transparent;
+        }
+
+            tbody tr.pending {
+                background: #d9e9f7;
+                color: #036b80;
+            }
+
+            tbody tr.arrived {
+                background: #c9e6b9;
+                color: #2e6b26;
+            }
+
+            tbody tr.cancelled {
+                background: #f9d6d5;
+                color: #9c2b25;
+                text-decoration: line-through;
+            }
+
+            tbody tr:hover,
+            tbody tr:focus {
+                box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+                outline: none;
+            }
+
+        /* Mejorar "touch target" para filas (móviles) */
+        tbody tr {
+            min-height: 48px;
+        }
+
+        /* Botón agregar */
+        .add-btn {
+            background: #028090;
+            border: none;
+            color: white;
+            padding: 14px 0;
+            font-size: 1.15rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            user-select: none;
+        }
+
+            .add-btn:hover,
+            .add-btn:focus {
+                background: #05668d;
+                transform: scale(1.05);
+                outline: none;
+            }
+
+        /* Modal formulario */
+        #form-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+            #form-container.active {
+                display: flex;
+                animation: fadeInBg 0.3s ease forwards;
+            }
+
+        @keyframes fadeInBg {
+            from {
+                background: rgba(0,0,0,0);
+            }
+
+            to {
+                background: rgba(0,0,0,0.45);
+            }
+        }
+
+        #form {
+            background: white;
+            padding: 30px 32px;
+            border-radius: 14px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            font-weight: 600;
+        }
+
+            #form h3 {
+                margin-top: 0;
+                color: #05668d;
+                margin-bottom: 22px;
+                font-weight: 800;
+                font-size: 1.9rem;
+                user-select: none;
+            }
+
+            #form label {
+                display: block;
+                margin: 12px 0 6px 0;
+                font-weight: 700;
+                color: #034a61;
+            }
+
+            #form input, #form select {
+                width: 100%;
+                padding: 10px 14px;
+                font-size: 1rem;
+                border-radius: 7px;
+                border: 1.5px solid #a1c3d1;
+                transition: border-color 0.3s ease;
+                font-family: 'Inter', sans-serif;
+                font-weight: 600;
+            }
+
+                #form input:focus, #form select:focus {
+                    outline: none;
+                    border-color: #028090;
+                    box-shadow: 0 0 6px #028090bb;
+                }
+
+            #form button[type="submit"] {
+                margin-top: 26px;
+                width: 100%;
+                background: #028090;
+                border: none;
+                color: white;
+                font-weight: 700;
+                font-size: 1.25rem;
+                padding: 14px 0;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+                #form button[type="submit"]:hover,
+                #form button[type="submit"]:focus {
+                    background: #036b80;
+                    outline: none;
+                }
+
+        .close-btn {
+            margin-top: 12px;
+            width: 100%;
+            background: #a1c3d1;
+            border: none;
+            color: #034a61;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 12px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .close-btn:hover,
+            .close-btn:focus {
+                background: #7ca6b5;
+                outline: none;
+            }
+
+        /* Total general */
+        #total-general {
+            max-width: 680px;
+            margin: 0 auto 40px auto;
+            font-weight: 700;
+            font-size: 1.35rem;
+            color: #034a61;
+            user-select: none;
+            text-align: right;
+            padding: 0 20px;
+        }
+
+        /* Menú flotante */
+        .floating-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .menu-button {
+            background: #05668d;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+            .menu-button:hover {
+                background: #034a61;
+                transform: scale(1.05);
+            }
+
+        .menu-options {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            display: none;
+            min-width: 150px;
+        }
+
+            .menu-options button {
+                background: none;
+                border: none;
+                padding: 8px 12px;
+                font-family: 'Inter', sans-serif;
+                font-size: 1rem;
+                color: #034a61;
+                cursor: pointer;
+                border-radius: 6px;
+                width: 100%;
+                text-align: left;
+                transition: background-color 0.2s ease;
+            }
+
+                .menu-options button:hover {
+                    background: #f0faff;
+                }
+
+            .menu-options.hidden {
+                display: none;
+            }
+
+            .menu-options:not(.hidden) {
+                display: block;
+            }
+
+        /* Modo oscuro */
+        body.dark-mode {
+            background: #121212;
+            color: #f0f0f0;
+        }
+
+            body.dark-mode main {
+                background: #121212;
+            }
+
+            body.dark-mode section {
+                background: #1e1e1e;
+                color: #f0f0f0;
+            }
+
+            body.dark-mode .content {
+                background: #2b2b2b;
+            }
+
+            body.dark-mode table {
+                color: #f0f0f0;
+            }
+
+            body.dark-mode thead {
+                background: #034a61;
+            }
+
+            body.dark-mode #form {
+                background: #2b2b2b;
+                color: #f0f0f0;
+            }
+
+                body.dark-mode #form label {
+                    color: #f0f0f0;
+                }
+
+                body.dark-mode #form input,
+                body.dark-mode #form select {
+                    background: #3b3b3b;
+                    color: #f0f0f0;
+                    border-color: #555;
+                }
+
+            body.dark-mode .menu-options {
+                background: #2b2b2b;
+                color: #f0f0f0;
+            }
+
+                body.dark-mode .menu-options button {
+                    color: #f0f0f0;
+                }
+
+                    body.dark-mode .menu-options button:hover {
+                        background: #3b3b3b;
+                    }
+
+            body.dark-mode .date-container label {
+                color: #f0f0f0;
+            }
+
+            body.dark-mode .date-container input {
+                background: #3b3b3b;
+                color: #f0f0f0;
+                border-color: #555;
+            }
+
+        /* Responsive */
+        @media (max-width: 460px) {
+            header {
+                font-size: 2rem;
+                padding: 0 10px;
+            }
+
+            .accordion-btn {
+                font-size: 1.15rem;
+                padding: 16px 18px;
+            }
+
+            table th, table td {
+                font-size: 0.9rem;
+                padding: 8px 10px;
+            }
+
+            #form {
+                padding: 24px 24px;
+            }
+
+                #form h3 {
+                    font-size: 1.5rem;
+                    margin-bottom: 18px;
+                }
+
+                #form button[type="submit"], .close-btn {
+                    font-size: 1.05rem;
+                    padding: 12px 0;
+                }
+
+            .floating-menu {
+                top: 10px;
+                right: 10px;
+            }
+
+            .date-container {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>Aqua Esmeralda Beach Club</header>
+    <div class="date-container">
+        <label for="calendar">Fecha de reservas:</label>
+        <input type="date" id="calendar" />
+    </div>
+    <main>
+        <section id="vip" aria-labelledby="vip-header" aria-expanded="false">
+            <button class="accordion-btn" aria-controls="vip-content" id="vip-header" aria-expanded="false" aria-haspopup="true">
+                <span>Reservas VIP</span>
+                <span class="count" aria-live="polite" aria-atomic="true" id="vip-count">0</span>
+            </button>
+            <div class="content" id="vip-content" role="region" aria-hidden="true">
+                <table aria-describedby="vip-desc" role="table">
+                    <caption id="vip-desc" class="sr-only">Lista de reservas para zona VIP</caption>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Carnet</th>
+                            <th>Hora</th>
+                            <th>Personas</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button class="add-btn" aria-label="Agregar reserva en VIP">Agregar Reserva</button>
+            </div>
+        </section>
+        <section id="regular" aria-labelledby="regular-header" aria-expanded="false">
+            <button class="accordion-btn" aria-controls="regular-content" id="regular-header" aria-expanded="false" aria-haspopup="true">
+                <span>Reservas Regular</span>
+                <span class="count" aria-live="polite" aria-atomic="true" id="regular-count">0</span>
+            </button>
+            <div class="content" id="regular-content" role="region" aria-hidden="true">
+                <table aria-describedby="regular-desc" role="table">
+                    <caption id="regular-desc" class="sr-only">Lista de reservas para zona Regular</caption>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Carnet</th>
+                            <th>Hora</th>
+                            <th>Personas</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button class="add-btn" aria-label="Agregar reserva en Regular">Agregar Reserva</button>
+            </div>
+        </section>
+        <section id="restaurante" aria-labelledby="restaurante-header" aria-expanded="false">
+            <button class="accordion-btn" aria-controls="restaurante-content" id="restaurante-header" aria-expanded="false" aria-haspopup="true">
+                <span>Reservas Restaurante</span>
+                <span class="count" aria-live="polite" aria-atomic="true" id="restaurante-count">0</span>
+            </button>
+            <div class="content" id="restaurante-content" role="region" aria-hidden="true">
+                <table aria-describedby="restaurante-desc" role="table">
+                    <caption id="restaurante-desc" class="sr-only">Lista de reservas para zona Restaurante</caption>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Carnet</th>
+                            <th>Hora</th>
+                            <th>Personas</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button class="add-btn" aria-label="Agregar reserva en Restaurante">Agregar Reserva</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="total-general" aria-live="polite" aria-atomic="true">
+        Total general de personas (sin reservas canceladas): 0
+    </div>
+
+    <div id="form-container" role="dialog" aria-modal="true" aria-labelledby="form-title" aria-describedby="form-desc">
+        <form id="form">
+            <h3 id="form-title">Agregar reserva</h3>
+            <p id="form-desc" class="sr-only">Formulario para agregar o editar una reserva.</p>
+            <label for="input-nombre">Nombre</label>
+            <input id="input-nombre" name="nombre" type="text" autocomplete="name" required />
+
+            <label for="input-carnet">Carnet</label>
+            <input id="input-carnet" name="carnet" type="text" autocomplete="off" required />
+
+            <label for="input-hora">Hora</label>
+            <input id="input-hora" name="hora" type="time" required />
+
+            <label for="input-personas">Personas</label>
+            <input id="input-personas" name="personas" type="number" min="1" required />
+
+            <label for="input-estado">Estado</label>
+            <select id="input-estado" name="estado" required>
+                <option value="pending">Pendiente</option>
+                <option value="arrived">Llegó</option>
+                <option value="cancelled">Cancelado</option>
+            </select>
+
+            <button type="submit">Guardar</button>
+            <button type="button" class="close-btn" aria-label="Cerrar formulario">Cancelar</button>
+        </form>
+    </div>
+
+    <!-- Botón de opciones -->
+    <div class="floating-menu">
+        <div class="menu-button" onclick="toggleOptions()">⋮</div>
+        <div class="menu-options hidden" id="menu-options">
+            <button onclick="toggleDarkMode()">Modo oscuro</button>
+        </div>
+    </div>
+
+    <script>
+  const data = {
+    // Estructura para almacenar reservas por fecha
+    // Ejemplo: { "2023-11-15": { vip: [], regular: [], restaurante: [] } }
+  };
+
+  // Referencias para mejorar legibilidad
+  const sections = ['vip', 'regular', 'restaurante'];
+  let currentDate = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
+
+  // Variables para control edición
+  let editSection = null;
+  let editIndex = null;
+
+  // Mostrar/Ocultar acordeones
+  sections.forEach(sec => {
+    const btn = document.querySelector(`#${sec} > .accordion-btn`);
+    const content = document.getElementById(`${sec}-content`);
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', !expanded);
+      content.classList.toggle('active');
+      content.setAttribute('aria-hidden', expanded);
+      document.getElementById(sec).classList.toggle('expanded');
+    });
+  });
+
+  // Abrir formulario para agregar reserva
+  function openAddForm(section) {
+    editSection = section;
+    editIndex = null;
+    form.reset();
+    form.querySelector('h3').textContent = `Agregar reserva en ${capitalize(section)}`;
+    form.querySelector('button[type="submit"]').textContent = 'Agregar';
+    formContainer.classList.add('active');
+    document.getElementById('input-nombre').focus();
+  }
+
+  // Abrir formulario para editar reserva
+  function openEditForm(section, index) {
+    editSection = section;
+    editIndex = index;
+    const currentData = getCurrentDateData();
+    const item = currentData[section][index];
+    form.querySelector('h3').textContent = `Editar reserva en ${capitalize(section)}`;
+    form.querySelector('button[type="submit"]').textContent = 'Guardar cambios';
+    form['nombre'].value = item.nombre;
+    form['carnet'].value = item.carnet;
+    form['hora'].value = item.hora;
+    form['personas'].value = item.personas;
+    form['estado'].value = item.estado;
+    formContainer.classList.add('active');
+    document.getElementById('input-nombre').focus();
+  }
+
+  // Renderizar una sección (tabla y contador)
+  function renderSection(section) {
+    const tbody = document.querySelector(`#${section} tbody`);
+    tbody.innerHTML = '';
+
+    const currentData = getCurrentDateData();
+    const sectionData = currentData[section] || [];
+
+    sectionData.forEach((reserva, i) => {
+      const tr = document.createElement('tr');
+      tr.tabIndex = 0;
+      tr.className = reserva.estado;
+      tr.setAttribute('role', 'row');
+      tr.setAttribute('aria-label', `${reserva.nombre}, ${reserva.carnet}, ${reserva.hora}, ${reserva.personas} personas, estado: ${estadoTexto(reserva.estado)}`);
+      tr.addEventListener('click', () => openEditForm(section, i));
+      tr.addEventListener('keypress', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          openEditForm(section, i);
+        }
+      });
+      tr.innerHTML = `
+        <td>${reserva.nombre}</td>
+        <td>${reserva.carnet}</td>
+        <td>${reserva.hora}</td>
+        <td>${reserva.personas}</td>
+        <td>${estadoTexto(reserva.estado)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Actualizar contador
+    document.getElementById(`${section}-count`).textContent = sectionData.length;
+  }
+
+  // Obtener datos para la fecha actual
+  function getCurrentDateData() {
+    if (!data[currentDate]) {
+      data[currentDate] = {
+        vip: [],
+        regular: [],
+        restaurante: []
+      };
+    }
+    return data[currentDate];
+  }
+
+  // Texto legible para estado
+  function estadoTexto(estado) {
+    switch (estado) {
+      case 'pending': return 'Pendiente';
+      case 'arrived': return 'Llegó';
+      case 'cancelled': return 'Cancelado';
+      default: return '';
+    }
+  }
+
+  // Actualizar total general, EXCLUYENDO reservas canceladas
+  function updateTotalGeneral() {
+    let total = 0;
+    const currentData = getCurrentDateData();
+
+    sections.forEach(sec => {
+      (currentData[sec] || []).forEach(reserva => {
+        if (reserva.estado !== 'cancelled') {
+          total += Number(reserva.personas);
+        }
+      });
+    });
+
+    document.getElementById('total-general').textContent = `Total general de personas (sin reservas canceladas): ${total}`;
+  }
+
+  // Capitalizar palabras para encabezados
+  function capitalize(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+
+  // Manejo del formulario
+  const formContainer = document.getElementById('form-container');
+  const form = document.getElementById('form');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const newReserva = {
+      nombre: form.nombre.value.trim(),
+      carnet: form.carnet.value.trim(),
+      hora: form.hora.value,
+      personas: Number(form.personas.value),
+      estado: form.estado.value
+    };
+
+    const currentData = getCurrentDateData();
+
+    if (editIndex !== null) {
+      // Editar reserva existente
+      currentData[editSection][editIndex] = newReserva;
+    } else {
+      // Agregar nueva reserva
+      currentData[editSection].push(newReserva);
+    }
+
+    renderSection(editSection);
+    updateTotalGeneral();
+    saveAllData();
+    closeForm();
+  });
+
+  // Cerrar formulario con botón cancelar
+  form.querySelector('.close-btn').addEventListener('click', () => {
+    closeForm();
+  });
+
+  // Función cerrar formulario y limpiar
+  function closeForm() {
+    formContainer.classList.remove('active');
+    editSection = null;
+    editIndex = null;
+    form.reset();
+  }
+
+  // Botones agregar en cada sección
+  sections.forEach(sec => {
+    const btnAdd = document.querySelector(`#${sec} .add-btn`);
+    btnAdd.addEventListener('click', () => openAddForm(sec));
+  });
+
+  // Guardar datos en localStorage
+  function saveAllData() {
+    localStorage.setItem('beachClubData', JSON.stringify(data));
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? '1' : '0');
+  }
+
+  // Cargar datos de localStorage
+  function loadAllData() {
+    const savedData = localStorage.getItem('beachClubData');
+    if (savedData) {
+      data = JSON.parse(savedData);
+    }
+
+    // Cargar datos para la fecha actual
+    loadDataForDate(currentDate);
+
+    if (localStorage.getItem('darkMode') === '1') {
+      document.body.classList.add('dark-mode');
+    }
+  }
+
+  // Cargar datos para una fecha específica
+  function loadDataForDate(date) {
+    currentDate = date;
+    document.getElementById('calendar').value = date;
+
+    // Si no hay datos para esta fecha, inicializar estructura
+    if (!data[date]) {
+      data[date] = {
+        vip: [],
+        regular: [],
+        restaurante: []
+      };
+    }
+
+    // Renderizar todas las secciones
+    sections.forEach(sec => renderSection(sec));
+    updateTotalGeneral();
+  }
+
+  // Toggle menú de opciones
+  function toggleOptions() {
+    const menu = document.getElementById('menu-options');
+    menu.classList.toggle('hidden');
+  }
+
+  // Toggle modo oscuro
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    saveAllData();
+  }
+
+  // Inicializar vista
+  document.addEventListener('DOMContentLoaded', () => {
+    // Configurar calendario
+    const calendar = document.getElementById('calendar');
+    const today = new Date().toISOString().split('T')[0];
+    calendar.value = today;
+
+    // Manejar cambios en el calendario
+    calendar.addEventListener('change', (e) => {
+      const selectedDate = e.target.value;
+      loadDataForDate(selectedDate);
+    });
+
+    // Cargar datos iniciales
+    loadAllData();
+  });
+
+  // Teclado accesible para acordeones: abrir con Enter o espacio
+  document.querySelectorAll('.accordion-btn').forEach(btn => {
+    btn.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        btn.click();
+      }
+    });
+  });
+    </script>
+</body>
+</html>
