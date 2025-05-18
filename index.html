@@ -365,12 +365,16 @@
             font-size: 1.8rem;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.2s ease, background-color 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
             .menu-button:hover {
                 background: #034a61;
-                transform: scale(1.05);
+                transform: scale(1.1) rotate(90deg);
+            }
+
+            .menu-button.active {
+                transform: rotate(90deg);
             }
 
         .menu-options {
@@ -381,14 +385,23 @@
             border-radius: 12px;
             padding: 10px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            display: none;
-            min-width: 150px;
+            min-width: 180px;
+            transform: translateY(-20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+
+            .menu-options.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
 
             .menu-options button {
                 background: none;
                 border: none;
-                padding: 8px 12px;
+                padding: 10px 12px;
                 font-family: 'Inter', sans-serif;
                 font-size: 1rem;
                 color: #034a61;
@@ -396,20 +409,128 @@
                 border-radius: 6px;
                 width: 100%;
                 text-align: left;
-                transition: background-color 0.2s ease;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
             }
 
                 .menu-options button:hover {
                     background: #f0faff;
+                    transform: translateX(5px);
                 }
 
-            .menu-options.hidden {
-                display: none;
+                .menu-options button i {
+                    font-size: 1.2rem;
+                }
+
+        /* Modal de búsqueda */
+        #search-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+            #search-container.active {
+                display: flex;
+                animation: fadeInBg 0.3s ease forwards;
             }
 
-            .menu-options:not(.hidden) {
-                display: block;
+        #search-form {
+            background: white;
+            padding: 30px 32px;
+            border-radius: 14px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            font-weight: 600;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+            #search-form h3 {
+                margin-top: 0;
+                color: #05668d;
+                margin-bottom: 22px;
+                font-weight: 800;
+                font-size: 1.9rem;
+                user-select: none;
             }
+
+        #search-results {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .search-result-item {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+            .search-result-item:hover {
+                background: #f7fcff;
+            }
+
+        .search-result-header {
+            font-weight: 700;
+            color: #05668d;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .search-result-details {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+            .search-result-details div {
+                margin-top: 3px;
+            }
+
+        /* Autocompletado */
+        .autocomplete {
+            position: relative;
+        }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #a1c3d1;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 0 0 7px 7px;
+        }
+
+            .autocomplete-items div {
+                padding: 10px;
+                cursor: pointer;
+                border-bottom: 1px solid #a1c3d1;
+            }
+
+                .autocomplete-items div:hover {
+                    background-color: #f0faff;
+                }
+
+        .autocomplete-active {
+            background-color: #05668d !important;
+            color: white;
+        }
 
         /* Modo oscuro */
         body.dark-mode {
@@ -438,17 +559,20 @@
                 background: #034a61;
             }
 
-            body.dark-mode #form {
+            body.dark-mode #form,
+            body.dark-mode #search-form {
                 background: #2b2b2b;
                 color: #f0f0f0;
             }
 
-                body.dark-mode #form label {
+                body.dark-mode #form label,
+                body.dark-mode #search-form label {
                     color: #f0f0f0;
                 }
 
                 body.dark-mode #form input,
-                body.dark-mode #form select {
+                body.dark-mode #form select,
+                body.dark-mode #search-form input {
                     background: #3b3b3b;
                     color: #f0f0f0;
                     border-color: #555;
@@ -477,6 +601,40 @@
                 border-color: #555;
             }
 
+            body.dark-mode .autocomplete-items {
+                background: #3b3b3b;
+                border-color: #555;
+            }
+
+                body.dark-mode .autocomplete-items div {
+                    border-color: #555;
+                    color: #f0f0f0;
+                }
+
+                    body.dark-mode .autocomplete-items div:hover {
+                        background-color: #4b4b4b;
+                    }
+
+            body.dark-mode #search-results {
+                border-color: #444;
+            }
+
+            body.dark-mode .search-result-item {
+                border-color: #444;
+            }
+
+                body.dark-mode .search-result-item:hover {
+                    background: #3b3b3b;
+                }
+
+            body.dark-mode .search-result-header {
+                color: #48a6cb;
+            }
+
+            body.dark-mode .search-result-details {
+                color: #bbb;
+            }
+
         /* Responsive */
         @media (max-width: 460px) {
             header {
@@ -494,11 +652,11 @@
                 padding: 8px 10px;
             }
 
-            #form {
+            #form, #search-form {
                 padding: 24px 24px;
             }
 
-                #form h3 {
+                #form h3, #search-form h3 {
                     font-size: 1.5rem;
                     margin-bottom: 18px;
                 }
@@ -517,8 +675,13 @@
                 flex-direction: column;
                 gap: 5px;
             }
+
+            .menu-options {
+                min-width: 160px;
+            }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <header>Aqua Esmeralda Beach Club</header>
@@ -603,11 +766,14 @@
         <form id="form">
             <h3 id="form-title">Agregar reserva</h3>
             <p id="form-desc" class="sr-only">Formulario para agregar o editar una reserva.</p>
-            <label for="input-nombre">Nombre</label>
-            <input id="input-nombre" name="nombre" type="text" autocomplete="name" required />
+            <div class="autocomplete">
+                <label for="input-nombre">Nombre</label>
+                <input id="input-nombre" name="nombre" type="text" autocomplete="off" required />
+                <div id="nombre-autocomplete" class="autocomplete-items"></div>
+            </div>
 
-            <label for="input-carnet">Carnet</label>
-            <input id="input-carnet" name="carnet" type="text" autocomplete="off" required />
+            <label for="input-carnet">Carnet (opcional)</label>
+            <input id="input-carnet" name="carnet" type="text" autocomplete="off" />
 
             <label for="input-hora">Hora</label>
             <input id="input-hora" name="hora" type="time" required />
@@ -627,273 +793,487 @@
         </form>
     </div>
 
+    <!-- Modal de búsqueda -->
+    <div id="search-container" role="dialog" aria-modal="true" aria-labelledby="search-title">
+        <form id="search-form">
+            <h3 id="search-title"><i class="fas fa-search"></i> Buscar Cliente</h3>
+            <label for="search-input">Nombre del cliente:</label>
+            <input type="text" id="search-input" placeholder="Escribe el nombre..." />
+            <button type="button" id="search-button" style="margin-top: 10px;">Buscar</button>
+            <div id="search-results"></div>
+            <button type="button" class="close-btn" onclick="closeSearch()" style="margin-top: 20px;">Cerrar</button>
+        </form>
+    </div>
+
     <!-- Botón de opciones -->
     <div class="floating-menu">
-        <div class="menu-button" onclick="toggleOptions()">⋮</div>
-        <div class="menu-options hidden" id="menu-options">
-            <button onclick="toggleDarkMode()">Modo oscuro</button>
+        <div class="menu-button" id="menu-button" onclick="toggleOptions()">⋮</div>
+        <div class="menu-options" id="menu-options">
+            <button onclick="toggleDarkMode()"><i class="fas fa-moon"></i> Modo oscuro</button>
+            <button onclick="openSearch()"><i class="fas fa-search"></i> Buscar cliente</button>
         </div>
     </div>
 
     <script>
-  const data = {
-    // Estructura para almacenar reservas por fecha
-    // Ejemplo: { "2023-11-15": { vip: [], regular: [], restaurante: [] } }
-  };
+        const data = {
+            // Estructura para almacenar reservas por fecha
+            // Ejemplo: { "2023-11-15": { vip: [], regular: [], restaurante: [] } }
+        };
 
-  // Referencias para mejorar legibilidad
-  const sections = ['vip', 'regular', 'restaurante'];
-  let currentDate = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
+        // Referencias para mejorar legibilidad
+        const sections = ['vip', 'regular', 'restaurante'];
+        let currentDate = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
 
-  // Variables para control edición
-  let editSection = null;
-  let editIndex = null;
+        // Variables para control edición
+        let editSection = null;
+        let editIndex = null;
 
-  // Mostrar/Ocultar acordeones
-  sections.forEach(sec => {
-    const btn = document.querySelector(`#${sec} > .accordion-btn`);
-    const content = document.getElementById(`${sec}-content`);
-    btn.addEventListener('click', () => {
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', !expanded);
-      content.classList.toggle('active');
-      content.setAttribute('aria-hidden', expanded);
-      document.getElementById(sec).classList.toggle('expanded');
-    });
-  });
+        // Mostrar/Ocultar acordeones
+        sections.forEach(sec => {
+            const btn = document.querySelector(`#${sec} > .accordion-btn`);
+            const content = document.getElementById(`${sec}-content`);
+            btn.addEventListener('click', () => {
+                const expanded = btn.getAttribute('aria-expanded') === 'true';
+                btn.setAttribute('aria-expanded', !expanded);
+                content.classList.toggle('active');
+                content.setAttribute('aria-hidden', expanded);
+                document.getElementById(sec).classList.toggle('expanded');
+            });
+        });
 
-  // Abrir formulario para agregar reserva
-  function openAddForm(section) {
-    editSection = section;
-    editIndex = null;
-    form.reset();
-    form.querySelector('h3').textContent = `Agregar reserva en ${capitalize(section)}`;
-    form.querySelector('button[type="submit"]').textContent = 'Agregar';
-    formContainer.classList.add('active');
-    document.getElementById('input-nombre').focus();
-  }
-
-  // Abrir formulario para editar reserva
-  function openEditForm(section, index) {
-    editSection = section;
-    editIndex = index;
-    const currentData = getCurrentDateData();
-    const item = currentData[section][index];
-    form.querySelector('h3').textContent = `Editar reserva en ${capitalize(section)}`;
-    form.querySelector('button[type="submit"]').textContent = 'Guardar cambios';
-    form['nombre'].value = item.nombre;
-    form['carnet'].value = item.carnet;
-    form['hora'].value = item.hora;
-    form['personas'].value = item.personas;
-    form['estado'].value = item.estado;
-    formContainer.classList.add('active');
-    document.getElementById('input-nombre').focus();
-  }
-
-  // Renderizar una sección (tabla y contador)
-  function renderSection(section) {
-    const tbody = document.querySelector(`#${section} tbody`);
-    tbody.innerHTML = '';
-
-    const currentData = getCurrentDateData();
-    const sectionData = currentData[section] || [];
-
-    sectionData.forEach((reserva, i) => {
-      const tr = document.createElement('tr');
-      tr.tabIndex = 0;
-      tr.className = reserva.estado;
-      tr.setAttribute('role', 'row');
-      tr.setAttribute('aria-label', `${reserva.nombre}, ${reserva.carnet}, ${reserva.hora}, ${reserva.personas} personas, estado: ${estadoTexto(reserva.estado)}`);
-      tr.addEventListener('click', () => openEditForm(section, i));
-      tr.addEventListener('keypress', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          openEditForm(section, i);
+        // Abrir formulario para agregar reserva
+        function openAddForm(section) {
+            editSection = section;
+            editIndex = null;
+            form.reset();
+            form.querySelector('h3').textContent = `Agregar reserva en ${capitalize(section)}`;
+            form.querySelector('button[type="submit"]').textContent = 'Agregar';
+            formContainer.classList.add('active');
+            document.getElementById('input-nombre').focus();
         }
-      });
-      tr.innerHTML = `
-        <td>${reserva.nombre}</td>
-        <td>${reserva.carnet}</td>
-        <td>${reserva.hora}</td>
-        <td>${reserva.personas}</td>
-        <td>${estadoTexto(reserva.estado)}</td>
-      `;
-      tbody.appendChild(tr);
-    });
 
-    // Actualizar contador
-    document.getElementById(`${section}-count`).textContent = sectionData.length;
-  }
-
-  // Obtener datos para la fecha actual
-  function getCurrentDateData() {
-    if (!data[currentDate]) {
-      data[currentDate] = {
-        vip: [],
-        regular: [],
-        restaurante: []
-      };
-    }
-    return data[currentDate];
-  }
-
-  // Texto legible para estado
-  function estadoTexto(estado) {
-    switch (estado) {
-      case 'pending': return 'Pendiente';
-      case 'arrived': return 'Llegó';
-      case 'cancelled': return 'Cancelado';
-      default: return '';
-    }
-  }
-
-  // Actualizar total general, EXCLUYENDO reservas canceladas
-  function updateTotalGeneral() {
-    let total = 0;
-    const currentData = getCurrentDateData();
-
-    sections.forEach(sec => {
-      (currentData[sec] || []).forEach(reserva => {
-        if (reserva.estado !== 'cancelled') {
-          total += Number(reserva.personas);
+        // Abrir formulario para editar reserva
+        function openEditForm(section, index) {
+            editSection = section;
+            editIndex = index;
+            const currentData = getCurrentDateData();
+            const item = currentData[section][index];
+            form.querySelector('h3').textContent = `Editar reserva en ${capitalize(section)}`;
+            form.querySelector('button[type="submit"]').textContent = 'Guardar cambios';
+            form['nombre'].value = item.nombre;
+            form['carnet'].value = item.carnet || '';
+            form['hora'].value = item.hora;
+            form['personas'].value = item.personas;
+            form['estado'].value = item.estado;
+            formContainer.classList.add('active');
+            document.getElementById('input-nombre').focus();
         }
-      });
-    });
 
-    document.getElementById('total-general').textContent = `Total general de personas (sin reservas canceladas): ${total}`;
-  }
+        // Renderizar una sección (tabla y contador)
+        function renderSection(section) {
+            const tbody = document.querySelector(`#${section} tbody`);
+            tbody.innerHTML = '';
 
-  // Capitalizar palabras para encabezados
-  function capitalize(text) {
-    return text.charAt(0).toUpperCase() + text.slice(1);
-  }
+            const currentData = getCurrentDateData();
+            const sectionData = currentData[section] || [];
 
-  // Manejo del formulario
-  const formContainer = document.getElementById('form-container');
-  const form = document.getElementById('form');
+            sectionData.forEach((reserva, i) => {
+                const tr = document.createElement('tr');
+                tr.tabIndex = 0;
+                tr.className = reserva.estado;
+                tr.setAttribute('role', 'row');
+                tr.setAttribute('aria-label', `${reserva.nombre}, ${reserva.carnet || 'Sin carnet'}, ${reserva.hora}, ${reserva.personas} personas, estado: ${estadoTexto(reserva.estado)}`);
+                tr.addEventListener('click', () => openEditForm(section, i));
+                tr.addEventListener('keypress', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        openEditForm(section, i);
+                    }
+                });
+                tr.innerHTML = `
+            <td>${reserva.nombre}</td>
+            <td>${reserva.carnet || ''}</td>
+            <td>${reserva.hora}</td>
+            <td>${reserva.personas}</td>
+            <td>${estadoTexto(reserva.estado)}</td>
+          `;
+                tbody.appendChild(tr);
+            });
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const newReserva = {
-      nombre: form.nombre.value.trim(),
-      carnet: form.carnet.value.trim(),
-      hora: form.hora.value,
-      personas: Number(form.personas.value),
-      estado: form.estado.value
-    };
+            // Actualizar contador
+            document.getElementById(`${section}-count`).textContent = sectionData.length;
+        }
 
-    const currentData = getCurrentDateData();
+        // Obtener datos para la fecha actual
+        function getCurrentDateData() {
+            if (!data[currentDate]) {
+                data[currentDate] = {
+                    vip: [],
+                    regular: [],
+                    restaurante: []
+                };
+            }
+            return data[currentDate];
+        }
 
-    if (editIndex !== null) {
-      // Editar reserva existente
-      currentData[editSection][editIndex] = newReserva;
-    } else {
-      // Agregar nueva reserva
-      currentData[editSection].push(newReserva);
-    }
+        // Texto legible para estado
+        function estadoTexto(estado) {
+            switch (estado) {
+                case 'pending': return 'Pendiente';
+                case 'arrived': return 'Llegó';
+                case 'cancelled': return 'Cancelado';
+                default: return '';
+            }
+        }
 
-    renderSection(editSection);
-    updateTotalGeneral();
-    saveAllData();
-    closeForm();
-  });
+        // Actualizar total general, EXCLUYENDO reservas canceladas
+        function updateTotalGeneral() {
+            let total = 0;
+            const currentData = getCurrentDateData();
 
-  // Cerrar formulario con botón cancelar
-  form.querySelector('.close-btn').addEventListener('click', () => {
-    closeForm();
-  });
+            sections.forEach(sec => {
+                (currentData[sec] || []).forEach(reserva => {
+                    if (reserva.estado !== 'cancelled') {
+                        total += Number(reserva.personas);
+                    }
+                });
+            });
 
-  // Función cerrar formulario y limpiar
-  function closeForm() {
-    formContainer.classList.remove('active');
-    editSection = null;
-    editIndex = null;
-    form.reset();
-  }
+            document.getElementById('total-general').textContent = `Total general de personas (sin reservas canceladas): ${total}`;
+        }
 
-  // Botones agregar en cada sección
-  sections.forEach(sec => {
-    const btnAdd = document.querySelector(`#${sec} .add-btn`);
-    btnAdd.addEventListener('click', () => openAddForm(sec));
-  });
+        // Capitalizar palabras para encabezados
+        function capitalize(text) {
+            return text.charAt(0).toUpperCase() + text.slice(1);
+        }
 
-  // Guardar datos en localStorage
-  function saveAllData() {
-    localStorage.setItem('beachClubData', JSON.stringify(data));
-    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? '1' : '0');
-  }
+        // Manejo del formulario
+        const formContainer = document.getElementById('form-container');
+        const form = document.getElementById('form');
 
-  // Cargar datos de localStorage
-  function loadAllData() {
-    const savedData = localStorage.getItem('beachClubData');
-    if (savedData) {
-      data = JSON.parse(savedData);
-    }
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const newReserva = {
+                nombre: form.nombre.value.trim(),
+                carnet: form.carnet.value.trim() || null, // Carnet es opcional
+                hora: form.hora.value,
+                personas: Number(form.personas.value),
+                estado: form.estado.value
+            };
 
-    // Cargar datos para la fecha actual
-    loadDataForDate(currentDate);
+            const currentData = getCurrentDateData();
 
-    if (localStorage.getItem('darkMode') === '1') {
-      document.body.classList.add('dark-mode');
-    }
-  }
+            if (editIndex !== null) {
+                // Editar reserva existente
+                currentData[editSection][editIndex] = newReserva;
+            } else {
+                // Agregar nueva reserva
+                currentData[editSection].push(newReserva);
+            }
 
-  // Cargar datos para una fecha específica
-  function loadDataForDate(date) {
-    currentDate = date;
-    document.getElementById('calendar').value = date;
+            renderSection(editSection);
+            updateTotalGeneral();
+            saveAllData();
+            closeForm();
+        });
 
-    // Si no hay datos para esta fecha, inicializar estructura
-    if (!data[date]) {
-      data[date] = {
-        vip: [],
-        regular: [],
-        restaurante: []
-      };
-    }
+        // Cerrar formulario con botón cancelar
+        form.querySelector('.close-btn').addEventListener('click', () => {
+            closeForm();
+        });
 
-    // Renderizar todas las secciones
-    sections.forEach(sec => renderSection(sec));
-    updateTotalGeneral();
-  }
+        // Función cerrar formulario y limpiar
+        function closeForm() {
+            formContainer.classList.remove('active');
+            editSection = null;
+            editIndex = null;
+            form.reset();
+            // Limpiar autocompletado
+            document.getElementById('nombre-autocomplete').innerHTML = '';
+        }
 
-  // Toggle menú de opciones
-  function toggleOptions() {
-    const menu = document.getElementById('menu-options');
-    menu.classList.toggle('hidden');
-  }
+        // Botones agregar en cada sección
+        sections.forEach(sec => {
+            const btnAdd = document.querySelector(`#${sec} .add-btn`);
+            btnAdd.addEventListener('click', () => openAddForm(sec));
+        });
 
-  // Toggle modo oscuro
-  function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    saveAllData();
-  }
+        // Guardar datos en localStorage
+        function saveAllData() {
+            localStorage.setItem('beachClubData', JSON.stringify(data));
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? '1' : '0');
+        }
 
-  // Inicializar vista
-  document.addEventListener('DOMContentLoaded', () => {
-    // Configurar calendario
-    const calendar = document.getElementById('calendar');
-    const today = new Date().toISOString().split('T')[0];
-    calendar.value = today;
+        // Cargar datos de localStorage
+        function loadAllData() {
+            const savedData = localStorage.getItem('beachClubData');
+            if (savedData) {
+                data = JSON.parse(savedData);
+            }
 
-    // Manejar cambios en el calendario
-    calendar.addEventListener('change', (e) => {
-      const selectedDate = e.target.value;
-      loadDataForDate(selectedDate);
-    });
+            // Cargar datos para la fecha actual
+            loadDataForDate(currentDate);
 
-    // Cargar datos iniciales
-    loadAllData();
-  });
+            if (localStorage.getItem('darkMode') === '1') {
+                document.body.classList.add('dark-mode');
+            }
+        }
 
-  // Teclado accesible para acordeones: abrir con Enter o espacio
-  document.querySelectorAll('.accordion-btn').forEach(btn => {
-    btn.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        btn.click();
-      }
-    });
-  });
+        // Cargar datos para una fecha específica
+        function loadDataForDate(date) {
+            currentDate = date;
+            document.getElementById('calendar').value = date;
+
+            // Si no hay datos para esta fecha, inicializar estructura
+            if (!data[date]) {
+                data[date] = {
+                    vip: [],
+                    regular: [],
+                    restaurante: []
+                };
+            }
+
+            // Renderizar todas las secciones
+            sections.forEach(sec => renderSection(sec));
+            updateTotalGeneral();
+        }
+
+        // Toggle menú de opciones
+        function toggleOptions() {
+            const menuButton = document.getElementById('menu-button');
+            const menu = document.getElementById('menu-options');
+
+            menuButton.classList.toggle('active');
+            menu.classList.toggle('active');
+
+            if (menu.classList.contains('active')) {
+                // Animación de entrada
+                menu.style.transform = 'translateY(0)';
+                menu.style.opacity = '1';
+                menu.style.visibility = 'visible';
+            } else {
+                // Animación de salida
+                menu.style.transform = 'translateY(-20px)';
+                menu.style.opacity = '0';
+                menu.style.visibility = 'hidden';
+            }
+        }
+
+        // Cerrar menú al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            const menuButton = document.getElementById('menu-button');
+            const menu = document.getElementById('menu-options');
+
+            if (!menu.contains(e.target) && !menuButton.contains(e.target)) {
+                menuButton.classList.remove('active');
+                menu.classList.remove('active');
+                menu.style.transform = 'translateY(-20px)';
+                menu.style.opacity = '0';
+                menu.style.visibility = 'hidden';
+            }
+        });
+
+        // Toggle modo oscuro
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            saveAllData();
+            toggleOptions(); // Cerrar el menú después de seleccionar
+        }
+
+        // Abrir modal de búsqueda
+        function openSearch() {
+            document.getElementById('search-container').classList.add('active');
+            document.getElementById('search-input').focus();
+            toggleOptions(); // Cerrar el menú
+        }
+
+        // Cerrar modal de búsqueda
+        function closeSearch() {
+            document.getElementById('search-container').classList.remove('active');
+            document.getElementById('search-results').innerHTML = '';
+        }
+
+        // Buscar cliente
+        document.getElementById('search-button').addEventListener('click', searchClient);
+
+        function searchClient() {
+            const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
+            if (!searchTerm) return;
+
+            const resultsContainer = document.getElementById('search-results');
+            resultsContainer.innerHTML = '';
+
+            // Buscar en todas las fechas
+            let foundClients = {};
+
+            for (const date in data) {
+                sections.forEach(section => {
+                    const reservations = data[date][section] || [];
+
+                    reservations.forEach(reservation => {
+                        if (reservation.nombre.toLowerCase().includes(searchTerm)) {
+                            if (!foundClients[reservation.nombre]) {
+                                foundClients[reservation.nombre] = {
+                                    carnet: reservation.carnet,
+                                    reservations: []
+                                };
+                            }
+
+                            foundClients[reservation.nombre].reservations.push({
+                                date,
+                                section,
+                                hora: reservation.hora,
+                                personas: reservation.personas,
+                                estado: reservation.estado
+                            });
+                        }
+                    });
+                });
+            }
+
+            // Mostrar resultados
+            if (Object.keys(foundClients).length === 0) {
+                resultsContainer.innerHTML = '<p>No se encontraron clientes con ese nombre.</p>';
+                return;
+            }
+
+            for (const nombre in foundClients) {
+                const client = foundClients[nombre];
+                const clientElement = document.createElement('div');
+                clientElement.className = 'search-result-item';
+
+                let html = `
+            <div class="search-result-header">
+              <span>${nombre}</span>
+              ${client.carnet ? `<span>Carnet: ${client.carnet}</span>` : ''}
+            </div>
+            <div class="search-result-details">
+          `;
+
+                // Ordenar reservas por fecha (más reciente primero)
+                client.reservations.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                client.reservations.forEach(res => {
+                    const fechaFormateada = new Date(res.date).toLocaleDateString('es-ES', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    html += `
+              <div>
+                <strong>${fechaFormateada}</strong> -
+                ${capitalize(res.section)} |
+                ${res.hora} |
+                ${res.personas} persona${res.personas > 1 ? 's' : ''} |
+                Estado: ${estadoTexto(res.estado)}
+              </div>
+            `;
+                });
+
+                html += `</div>`;
+                clientElement.innerHTML = html;
+                resultsContainer.appendChild(clientElement);
+            }
+        }
+
+        // Autocompletado para nombres
+        document.getElementById('input-nombre').addEventListener('input', function () {
+            const input = this.value.trim();
+            const autocompleteList = document.getElementById('nombre-autocomplete');
+            autocompleteList.innerHTML = '';
+
+            if (input.length < 2) return;
+
+            // Buscar nombres similares en todas las reservas
+            const names = new Set();
+
+            for (const date in data) {
+                sections.forEach(section => {
+                    const reservations = data[date][section] || [];
+                    reservations.forEach(reservation => {
+                        if (reservation.nombre.toLowerCase().includes(input.toLowerCase())) {
+                            names.add(reservation.nombre);
+                        }
+                    });
+                });
+            }
+
+            if (names.size === 0) return;
+
+            // Mostrar sugerencias
+            names.forEach(name => {
+                const item = document.createElement('div');
+                item.textContent = name;
+                item.addEventListener('click', function () {
+                    document.getElementById('input-nombre').value = name;
+
+                    // Buscar el carnet más reciente para este nombre
+                    let latestReservation = null;
+                    for (const date in data) {
+                        sections.forEach(section => {
+                            const reservations = data[date][section] || [];
+                            reservations.forEach(reservation => {
+                                if (reservation.nombre === name && reservation.carnet) {
+                                    if (!latestReservation || new Date(date) > new Date(latestReservation.date)) {
+                                        latestReservation = reservation;
+                                    }
+                                }
+                            });
+                        });
+                    }
+
+                    if (latestReservation) {
+                        document.getElementById('input-carnet').value = latestReservation.carnet;
+                    }
+
+                    autocompleteList.innerHTML = '';
+                });
+                autocompleteList.appendChild(item);
+            });
+        });
+
+        // Cerrar autocompletado al hacer clic fuera
+        document.addEventListener('click', function (e) {
+            if (e.target.id !== 'input-nombre') {
+                document.getElementById('nombre-autocomplete').innerHTML = '';
+            }
+        });
+
+        // Inicializar vista
+        document.addEventListener('DOMContentLoaded', () => {
+            // Configurar calendario
+            const calendar = document.getElementById('calendar');
+            const today = new Date().toISOString().split('T')[0];
+            calendar.value = today;
+
+            // Manejar cambios en el calendario
+            calendar.addEventListener('change', (e) => {
+                const selectedDate = e.target.value;
+                loadDataForDate(selectedDate);
+            });
+
+            // Permitir búsqueda al presionar Enter
+            document.getElementById('search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchClient();
+                }
+            });
+
+            // Cargar datos iniciales
+            loadAllData();
+        });
+
+        // Teclado accesible para acordeones: abrir con Enter o espacio
+        document.querySelectorAll('.accordion-btn').forEach(btn => {
+            btn.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    btn.click();
+                }
+            });
+        });
     </script>
 </body>
 </html>
