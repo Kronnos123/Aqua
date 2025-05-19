@@ -1,5 +1,5 @@
 // Configuración
-const API_URL = 'https://script.google.com/macros/s/AKfycbwkEvJPeJuH0mh-aDdsJUoZd53p9CcKKimqjR4ZlOdivw2iqGLJBQQgvNSPN_go_vhg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbybZvefPe9w8JQijcf1FTfuAljN8aPogy0M--W00mjPa3lw9UE-nVVc2O7wTE_Z1FZt/exec';
 const sections = ['vip', 'regular', 'restaurante'];
 let currentDate = new Date().toISOString().split('T')[0];
 let editSection = null;
