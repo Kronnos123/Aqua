@@ -21,6 +21,7 @@
             align-items: center;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            padding: 10px;
         }
 
         header {
@@ -52,27 +53,27 @@
                 font-size: 1rem;
             }
 
-        main {
+        .container {
             width: 100%;
             max-width: 680px;
             padding: 0 20px 60px 20px;
         }
 
-        /* Pestañas (botones acordeón) */
-        section {
+        .section {
             margin-bottom: 1.8rem;
             border-radius: 12px;
             background: #ffffff;
             box-shadow: 0 8px 14px rgba(0,0,0,0.07);
             overflow: hidden;
             transition: box-shadow 0.3s ease;
+            border: 1px solid #ccc;
         }
 
-            section.expanded {
+            .section.expanded {
                 box-shadow: 0 14px 30px rgba(5, 102, 141, 0.3);
             }
 
-        .accordion-btn {
+        .section-header {
             width: 100%;
             background: #0487a0;
             color: white;
@@ -92,42 +93,15 @@
             will-change: transform, box-shadow;
         }
 
-            .accordion-btn:hover,
-            .accordion-btn:focus {
+            .section-header:hover,
+            .section-header:focus {
                 background-color: #036b80;
                 transform: scale(1.03);
                 box-shadow: 0 6px 14px rgba(3,107,128,0.5);
                 outline: none;
             }
 
-        .accordion-header {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            justify-content: space-between;
-        }
-        /* Número reservas */
-        .count {
-            min-width: 28px;
-            height: 28px;
-            font-size: 1rem;
-            font-weight: 700;
-            color: white;
-            background: #ef476f;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            user-select: none;
-            pointer-events: none;
-            box-shadow: 0 0 10px #ef476faa;
-            margin-left: 12px;
-            flex-shrink: 0;
-            transition: box-shadow 0.3s ease;
-        }
-
-        /* Contenido del acordeón con animación más fluida */
-        .content {
+        .section-content {
             max-height: 0;
             overflow: hidden;
             opacity: 0;
@@ -138,16 +112,16 @@
             padding: 0 24px;
         }
 
-            .content.active {
+            .section-content.active {
                 max-height: 800px;
                 opacity: 1;
                 transform: translateY(0);
                 padding-top: 18px;
                 padding-bottom: 25px;
                 box-shadow: inset 0 2px 8px rgba(5, 102, 141, 0.1);
+                display: block;
             }
 
-        /* Tabla */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -170,36 +144,52 @@
             cursor: pointer;
             border-radius: 8px;
             box-shadow: inset 0 0 0 0 transparent;
-        }
-
-            tbody tr.pending {
-                background: #d9e9f7;
-                color: #036b80;
-            }
-
-            tbody tr.arrived {
-                background: #c9e6b9;
-                color: #2e6b26;
-            }
-
-            tbody tr.cancelled {
-                background: #f9d6d5;
-                color: #9c2b25;
-                text-decoration: line-through;
-            }
-
-            tbody tr:hover,
-            tbody tr:focus {
-                box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-                outline: none;
-            }
-
-        /* Mejorar "touch target" para filas (móviles) */
-        tbody tr {
             min-height: 48px;
         }
 
-        /* Botón agregar */
+        tr.pending, .guest-pendiente {
+            background: #d9e9f7;
+            color: #036b80;
+        }
+
+        tr.arrived, .guest-llego {
+            background: #c9e6b9;
+            color: #2e6b26;
+        }
+
+        tr.cancelled, .guest-cancelado {
+            background: #f9d6d5;
+            color: #9c2b25;
+            text-decoration: line-through;
+        }
+
+        tbody tr:hover,
+        tbody tr:focus {
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            outline: none;
+        }
+
+        .guest-name {
+            cursor: pointer;
+            text-decoration: underline;
+            color: #007bff;
+        }
+
+        button {
+            margin: 10px;
+            padding: 8px 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            button:hover {
+                background: #0056b3;
+            }
+
         .add-btn {
             background: #028090;
             border: none;
@@ -208,9 +198,9 @@
             font-size: 1.15rem;
             border-radius: 8px;
             cursor: pointer;
-            width: 100%;
+            width: calc(100% - 20px);
+            margin: 10px;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            user-select: none;
         }
 
             .add-btn:hover,
@@ -220,13 +210,12 @@
                 outline: none;
             }
 
-        /* Modal formulario */
-        #form-container {
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0,0,0,0.45);
             display: none;
             justify-content: center;
@@ -235,7 +224,7 @@
             padding: 20px;
         }
 
-            #form-container.active {
+            .modal.active {
                 display: flex;
                 animation: fadeInBg 0.3s ease forwards;
             }
@@ -250,7 +239,7 @@
             }
         }
 
-        #form {
+        .modal-content {
             background: white;
             padding: 30px 32px;
             border-radius: 14px;
@@ -258,9 +247,12 @@
             width: 100%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-            #form h3 {
+            .modal-content h3 {
                 margin-top: 0;
                 color: #05668d;
                 margin-bottom: 22px;
@@ -269,14 +261,15 @@
                 user-select: none;
             }
 
-            #form label {
+            .modal-content label {
                 display: block;
                 margin: 12px 0 6px 0;
                 font-weight: 700;
                 color: #034a61;
             }
 
-            #form input, #form select {
+            .modal-content input,
+            .modal-content select {
                 width: 100%;
                 padding: 10px 14px;
                 font-size: 1rem;
@@ -287,13 +280,14 @@
                 font-weight: 600;
             }
 
-                #form input:focus, #form select:focus {
+                .modal-content input:focus,
+                .modal-content select:focus {
                     outline: none;
                     border-color: #028090;
                     box-shadow: 0 0 6px #028090bb;
                 }
 
-            #form button[type="submit"] {
+            .modal-content button[type="submit"] {
                 margin-top: 26px;
                 width: 100%;
                 background: #028090;
@@ -307,8 +301,8 @@
                 transition: background-color 0.3s ease;
             }
 
-                #form button[type="submit"]:hover,
-                #form button[type="submit"]:focus {
+                .modal-content button[type="submit"]:hover,
+                .modal-content button[type="submit"]:focus {
                     background: #036b80;
                     outline: none;
                 }
@@ -333,7 +327,23 @@
                 outline: none;
             }
 
-        /* Total general */
+        .hidden {
+            display: none;
+        }
+
+        .total-box {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
         #total-general {
             max-width: 680px;
             margin: 0 auto 40px auto;
@@ -345,12 +355,11 @@
             padding: 0 20px;
         }
 
-        /* Menú flotante */
         .floating-menu {
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1000;
+            z-index: 1100;
         }
 
         .menu-button {
@@ -390,6 +399,9 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
             .menu-options.active {
@@ -413,6 +425,7 @@
                 display: flex;
                 align-items: center;
                 gap: 8px;
+                margin: 0;
             }
 
                 .menu-options button:hover {
@@ -424,7 +437,6 @@
                     font-size: 1.2rem;
                 }
 
-        /* Modal de búsqueda */
         #search-container {
             position: fixed;
             top: 0;
@@ -497,7 +509,6 @@
                 margin-top: 3px;
             }
 
-        /* Autocompletado */
         .autocomplete {
             position: relative;
         }
@@ -532,22 +543,18 @@
             color: white;
         }
 
-        /* Modo oscuro */
         body.dark-mode {
             background: #121212;
             color: #f0f0f0;
         }
 
-            body.dark-mode main {
-                background: #121212;
-            }
-
-            body.dark-mode section {
+            body.dark-mode .section {
                 background: #1e1e1e;
                 color: #f0f0f0;
+                border-color: #444;
             }
 
-            body.dark-mode .content {
+            body.dark-mode .section-content {
                 background: #2b2b2b;
             }
 
@@ -559,20 +566,17 @@
                 background: #034a61;
             }
 
-            body.dark-mode #form,
-            body.dark-mode #search-form {
+            body.dark-mode .modal-content {
                 background: #2b2b2b;
                 color: #f0f0f0;
             }
 
-                body.dark-mode #form label,
-                body.dark-mode #search-form label {
+                body.dark-mode .modal-content label {
                     color: #f0f0f0;
                 }
 
-                body.dark-mode #form input,
-                body.dark-mode #form select,
-                body.dark-mode #search-form input {
+                body.dark-mode .modal-content input,
+                body.dark-mode .modal-content select {
                     background: #3b3b3b;
                     color: #f0f0f0;
                     border-color: #555;
@@ -601,19 +605,14 @@
                 border-color: #555;
             }
 
-            body.dark-mode .autocomplete-items {
+            body.dark-mode .close-btn {
                 background: #3b3b3b;
-                border-color: #555;
+                color: #f0f0f0;
             }
 
-                body.dark-mode .autocomplete-items div {
-                    border-color: #555;
-                    color: #f0f0f0;
+                body.dark-mode .close-btn:hover {
+                    background: #4b4b4b;
                 }
-
-                    body.dark-mode .autocomplete-items div:hover {
-                        background-color: #4b4b4b;
-                    }
 
             body.dark-mode #search-results {
                 border-color: #444;
@@ -635,14 +634,27 @@
                 color: #bbb;
             }
 
-        /* Responsive */
-        @media (max-width: 460px) {
+            body.dark-mode .autocomplete-items {
+                background: #3b3b3b;
+                border-color: #555;
+            }
+
+                body.dark-mode .autocomplete-items div {
+                    border-color: #555;
+                    color: #f0f0f0;
+                }
+
+                    body.dark-mode .autocomplete-items div:hover {
+                        background-color: #4b4b4b;
+                    }
+
+        @media (max-width: 600px) {
             header {
                 font-size: 2rem;
                 padding: 0 10px;
             }
 
-            .accordion-btn {
+            .section-header {
                 font-size: 1.15rem;
                 padding: 16px 18px;
             }
@@ -652,16 +664,18 @@
                 padding: 8px 10px;
             }
 
-            #form, #search-form {
-                padding: 24px 24px;
+            .modal-content {
+                padding: 24px;
+                max-width: 95%;
             }
 
-                #form h3, #search-form h3 {
+                .modal-content h3 {
                     font-size: 1.5rem;
                     margin-bottom: 18px;
                 }
 
-                #form button[type="submit"], .close-btn {
+                .modal-content button[type="submit"],
+                .close-btn {
                     font-size: 1.05rem;
                     padding: 12px 0;
                 }
@@ -679,6 +693,13 @@
             .menu-options {
                 min-width: 160px;
             }
+
+            .total-box {
+                bottom: 10px;
+                right: 10px;
+                font-size: 0.9rem;
+                padding: 8px 12px;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -689,13 +710,13 @@
         <label for="calendar">Fecha de reservas:</label>
         <input type="date" id="calendar" />
     </div>
-    <main>
-        <section id="vip" aria-labelledby="vip-header" aria-expanded="false">
-            <button class="accordion-btn" aria-controls="vip-content" id="vip-header" aria-expanded="false" aria-haspopup="true">
+    <main class="container">
+        <section id="vip" class="section" aria-labelledby="vip-header" aria-expanded="false">
+            <button class="section-header accordion-btn" aria-controls="vip-content" id="vip-header" aria-expanded="false" aria-haspopup="true">
                 <span>Reservas VIP</span>
                 <span class="count" aria-live="polite" aria-atomic="true" id="vip-count">0</span>
             </button>
-            <div class="content" id="vip-content" role="region" aria-hidden="true">
+            <div class="section-content content" id="vip-content" role="region" aria-hidden="true">
                 <table aria-describedby="vip-desc" role="table">
                     <caption id="vip-desc" class="sr-only">Lista de reservas para zona VIP</caption>
                     <thead>
@@ -712,12 +733,12 @@
                 <button class="add-btn" aria-label="Agregar reserva en VIP">Agregar Reserva</button>
             </div>
         </section>
-        <section id="regular" aria-labelledby="regular-header" aria-expanded="false">
-            <button class="accordion-btn" aria-controls="regular-content" id="regular-header" aria-expanded="false" aria-haspopup="true">
+        <section id="regular" class="section" aria-labelledby="regular-header" aria-expanded="false">
+            <button class="section-header accordion-btn" aria-controls="regular-content" id="regular-header" aria-expanded="false" aria-haspopup="true">
                 <span>Reservas Regular</span>
                 <span class="count" aria-live="polite" aria-atomic="true" id="regular-count">0</span>
             </button>
-            <div class="content" id="regular-content" role="region" aria-hidden="true">
+            <div class="section-content content" id="regular-content" role="region" aria-hidden="true">
                 <table aria-describedby="regular-desc" role="table">
                     <caption id="regular-desc" class="sr-only">Lista de reservas para zona Regular</caption>
                     <thead>
@@ -734,12 +755,12 @@
                 <button class="add-btn" aria-label="Agregar reserva en Regular">Agregar Reserva</button>
             </div>
         </section>
-        <section id="restaurante" aria-labelledby="restaurante-header" aria-expanded="false">
-            <button class="accordion-btn" aria-controls="restaurante-content" id="restaurante-header" aria-expanded="false" aria-haspopup="true">
+        <section id="restaurante" class="section" aria-labelledby="restaurante-header" aria-expanded="false">
+            <button class="section-header accordion-btn" aria-controls="restaurante-content" id="restaurante-header" aria-expanded="false" aria-haspopup="true">
                 <span>Reservas Restaurante</span>
                 <span class="count" aria-live="polite" aria-atomic="true" id="restaurante-count">0</span>
             </button>
-            <div class="content" id="restaurante-content" role="region" aria-hidden="true">
+            <div class="section-content content" id="restaurante-content" role="region" aria-hidden="true">
                 <table aria-describedby="restaurante-desc" role="table">
                     <caption id="restaurante-desc" class="sr-only">Lista de reservas para zona Restaurante</caption>
                     <thead>
@@ -762,114 +783,230 @@
         Total general de personas (sin reservas canceladas): 0
     </div>
 
-    <div id="form-container" role="dialog" aria-modal="true" aria-labelledby="form-title" aria-describedby="form-desc">
-        <form id="form">
-            <h3 id="form-title">Agregar reserva</h3>
-            <p id="form-desc" class="sr-only">Formulario para agregar o editar una reserva.</p>
-            <div class="autocomplete">
-                <label for="input-nombre">Nombre</label>
-                <input id="input-nombre" name="nombre" type="text" autocomplete="off" required />
-                <div id="nombre-autocomplete" class="autocomplete-items"></div>
-            </div>
+    <div id="form-container" class="modal" role="dialog" aria-modal="true" aria-labelledby="form-title" aria-describedby="form-desc">
+        <div class="modal-content">
+            <form id="form">
+                <h3 id="form-title">Agregar reserva</h3>
+                <p id="form-desc" class="sr-only">Formulario para agregar o editar una reserva.</p>
+                <div class="autocomplete">
+                    <label for="input-nombre">Nombre</label>
+                    <input id="input-nombre" name="nombre" type="text" autocomplete="off" required />
+                    <div id="nombre-autocomplete" class="autocomplete-items"></div>
+                </div>
 
-            <label for="input-carnet">Carnet (opcional)</label>
-            <input id="input-carnet" name="carnet" type="text" autocomplete="off" />
+                <label for="input-carnet">Carnet (opcional)</label>
+                <input id="input-carnet" name="carnet" type="text" autocomplete="off" />
 
-            <label for="input-hora">Hora</label>
-            <input id="input-hora" name="hora" type="time" required />
+                <label for="input-hora">Hora</label>
+                <input id="input-hora" name="hora" type="time" required />
 
-            <label for="input-personas">Personas</label>
-            <input id="input-personas" name="personas" type="number" min="1" required />
+                <label for="input-personas">Personas</label>
+                <input id="input-personas" name="personas" type="number" min="1" required />
 
-            <label for="input-estado">Estado</label>
-            <select id="input-estado" name="estado" required>
-                <option value="pending">Pendiente</option>
-                <option value="arrived">Llegó</option>
-                <option value="cancelled">Cancelado</option>
-            </select>
+                <label for="input-estado">Estado</label>
+                <select id="input-estado" name="estado" required>
+                    <option value="pending">Pendiente</option>
+                    <option value="arrived">Llegó</option>
+                    <option value="cancelled">Cancelado</option>
+                </select>
 
-            <button type="submit">Guardar</button>
-            <button type="button" class="close-btn" aria-label="Cerrar formulario">Cancelar</button>
-        </form>
+                <button type="submit">Guardar</button>
+                <button type="button" class="close-btn" aria-label="Cerrar formulario">Cancelar</button>
+            </form>
+        </div>
     </div>
 
     <!-- Modal de búsqueda -->
-    <div id="search-container" role="dialog" aria-modal="true" aria-labelledby="search-title">
-        <form id="search-form">
-            <h3 id="search-title"><i class="fas fa-search"></i> Buscar Cliente</h3>
-            <label for="search-input">Nombre del cliente:</label>
-            <input type="text" id="search-input" placeholder="Escribe el nombre..." />
-            <button type="button" id="search-button" style="margin-top: 10px;">Buscar</button>
-            <div id="search-results"></div>
-            <button type="button" class="close-btn" onclick="closeSearch()" style="margin-top: 20px;">Cerrar</button>
-        </form>
+    <div id="search-container" class="modal" role="dialog" aria-modal="true" aria-labelledby="search-title">
+        <div class="modal-content">
+            <form id="search-form">
+                <h3 id="search-title"><i class="fas fa-search"></i> Buscar Cliente</h3>
+                <label for="search-input">Nombre del cliente:</label>
+                <input type="text" id="search-input" placeholder="Escribe el nombre..." />
+                <button type="button" id="search-button">Buscar</button>
+                <div id="search-results"></div>
+                <button type="button" class="close-btn" style="margin-top: 20px;">Cerrar</button>
+            </form>
+        </div>
     </div>
 
     <!-- Botón de opciones -->
     <div class="floating-menu">
-        <div class="menu-button" id="menu-button" onclick="toggleOptions()">⋮</div>
+        <div class="menu-button" id="menu-button">⋮</div>
         <div class="menu-options" id="menu-options">
-            <button onclick="toggleDarkMode()"><i class="fas fa-moon"></i> Modo oscuro</button>
-            <button onclick="openSearch()"><i class="fas fa-search"></i> Buscar cliente</button>
+            <button><i class="fas fa-moon"></i> Modo oscuro</button>
+            <button><i class="fas fa-search"></i> Buscar cliente</button>
         </div>
     </div>
 
     <script>
-        const data = {
-            // Estructura para almacenar reservas por fecha
-            // Ejemplo: { "2023-11-15": { vip: [], regular: [], restaurante: [] } }
-        };
-
-        // Referencias para mejorar legibilidad
+        // ===== CONFIGURACIÓN =====
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzf0YCqkbOZZ0I6DgnXzbBQJwP6E5CkHlbiTUxxsa5R-Kc7z9YQhgW9m9YpDIH47zg4/exec'; // Reemplaza con tu URL de Apps Script
         const sections = ['vip', 'regular', 'restaurante'];
-        let currentDate = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
-
-        // Variables para control edición
+        let currentDate = new Date().toISOString().split('T')[0];
         let editSection = null;
         let editIndex = null;
+        let data = {};
 
-        // Mostrar/Ocultar acordeones
-        sections.forEach(sec => {
-            const btn = document.querySelector(`#${sec} > .accordion-btn`);
-            const content = document.getElementById(`${sec}-content`);
-            btn.addEventListener('click', () => {
-                const expanded = btn.getAttribute('aria-expanded') === 'true';
-                btn.setAttribute('aria-expanded', !expanded);
-                content.classList.toggle('active');
-                content.setAttribute('aria-hidden', expanded);
-                document.getElementById(sec).classList.toggle('expanded');
+        // ===== FUNCIONES PARA EL MENÚ =====
+        document.getElementById('menu-button').addEventListener('click', function (e) {
+            e.stopPropagation(); // Evita que el evento se propague al documento
+            const menu = document.getElementById('menu-options');
+            menu.classList.toggle('active');
+
+            if (menu.classList.contains('active')) {
+                menu.style.transform = 'translateY(0)';
+                menu.style.opacity = '1';
+                menu.style.visibility = 'visible';
+            } else {
+                menu.style.transform = 'translateY(-20px)';
+                menu.style.opacity = '0';
+                menu.style.visibility = 'hidden';
+            }
+        });
+
+        // Cerrar menú al hacer clic fuera
+        document.addEventListener('click', function () {
+            const menu = document.getElementById('menu-options');
+            if (menu.classList.contains('active')) {
+                menu.classList.remove('active');
+                menu.style.transform = 'translateY(-20px)';
+                menu.style.opacity = '0';
+                menu.style.visibility = 'hidden';
+            }
+        });
+
+        // Evitar que el menú se cierre al hacer clic dentro de él
+        document.getElementById('menu-options').addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+
+        // Funcionalidad de los botones del menú
+        document.querySelectorAll('#menu-options button').forEach((button, index) => {
+            button.addEventListener('click', function () {
+                if (index === 0) {
+                    toggleDarkMode();
+                } else if (index === 1) {
+                    openSearch();
+                }
+
+                // Cerrar el menú después de seleccionar una opción
+                const menu = document.getElementById('menu-options');
+                menu.classList.remove('active');
+                menu.style.transform = 'translateY(-20px)';
+                menu.style.opacity = '0';
+                menu.style.visibility = 'hidden';
             });
         });
 
-        // Abrir formulario para agregar reserva
-        function openAddForm(section) {
-            editSection = section;
-            editIndex = null;
-            form.reset();
-            form.querySelector('h3').textContent = `Agregar reserva en ${capitalize(section)}`;
-            form.querySelector('button[type="submit"]').textContent = 'Agregar';
-            formContainer.classList.add('active');
-            document.getElementById('input-nombre').focus();
+        // ===== FUNCIONES PARA GOOGLE SHEETS =====
+        async function fetchFromGoogleSheets(params = {}) {
+            try {
+                const queryString = new URLSearchParams(params).toString();
+                const response = await fetch(`${API_URL}?${queryString}`);
+
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Error al comunicarse con Google Sheets:', error);
+                throw error;
+            }
         }
 
-        // Abrir formulario para editar reserva
-        function openEditForm(section, index) {
-            editSection = section;
-            editIndex = index;
-            const currentData = getCurrentDateData();
-            const item = currentData[section][index];
-            form.querySelector('h3').textContent = `Editar reserva en ${capitalize(section)}`;
-            form.querySelector('button[type="submit"]').textContent = 'Guardar cambios';
-            form['nombre'].value = item.nombre;
-            form['carnet'].value = item.carnet || '';
-            form['hora'].value = item.hora;
-            form['personas'].value = item.personas;
-            form['estado'].value = item.estado;
-            formContainer.classList.add('active');
-            document.getElementById('input-nombre').focus();
+        async function loadAllData() {
+            try {
+                const result = await fetchFromGoogleSheets({
+                    operation: 'getData'
+                });
+
+                data = result;
+                loadDataForDate(currentDate);
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+                // Fallback a localStorage
+                const savedData = localStorage.getItem('beachClubData');
+                if (savedData) {
+                    data = JSON.parse(savedData);
+                }
+            }
         }
 
-        // Renderizar una sección (tabla y contador)
+        async function saveAllData() {
+            localStorage.setItem('beachClubData', JSON.stringify(data));
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? '1' : '0');
+        }
+
+        async function addReservation(date, section, reservation) {
+            try {
+                await fetchFromGoogleSheets({
+                    operation: 'addReservation',
+                    date: date,
+                    section: section,
+                    reservation: JSON.stringify(reservation)
+                });
+
+                if (!data[date]) {
+                    data[date] = { vip: [], regular: [], restaurante: [] };
+                }
+                data[date][section].push(reservation);
+
+                return true;
+            } catch (error) {
+                console.error('Error al añadir reserva:', error);
+                throw error;
+            }
+        }
+
+        async function updateReservation(date, section, index, updatedReservation) {
+            try {
+                await fetchFromGoogleSheets({
+                    operation: 'updateReservation',
+                    date: date,
+                    section: section,
+                    index: index,
+                    reservation: JSON.stringify(updatedReservation)
+                });
+
+                data[date][section][index] = updatedReservation;
+
+                return true;
+            } catch (error) {
+                console.error('Error al actualizar reserva:', error);
+                throw error;
+            }
+        }
+
+        // ===== FUNCIONES PRINCIPALES =====
+        function getCurrentDateData() {
+            if (!data[currentDate]) {
+                data[currentDate] = {
+                    vip: [],
+                    regular: [],
+                    restaurante: []
+                };
+            }
+            return data[currentDate];
+        }
+
+        function loadDataForDate(date) {
+            currentDate = date;
+            document.getElementById('calendar').value = date;
+
+            if (!data[date]) {
+                data[date] = {
+                    vip: [],
+                    regular: [],
+                    restaurante: []
+                };
+            }
+
+            sections.forEach(sec => renderSection(sec));
+            updateTotalGeneral();
+        }
+
         function renderSection(section) {
             const tbody = document.querySelector(`#${section} tbody`);
             tbody.innerHTML = '';
@@ -883,49 +1020,27 @@
                 tr.className = reserva.estado;
                 tr.setAttribute('role', 'row');
                 tr.setAttribute('aria-label', `${reserva.nombre}, ${reserva.carnet || 'Sin carnet'}, ${reserva.hora}, ${reserva.personas} personas, estado: ${estadoTexto(reserva.estado)}`);
+
                 tr.addEventListener('click', () => openEditForm(section, i));
                 tr.addEventListener('keypress', e => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         openEditForm(section, i);
                     }
                 });
+
                 tr.innerHTML = `
-            <td>${reserva.nombre}</td>
-            <td>${reserva.carnet || ''}</td>
-            <td>${reserva.hora}</td>
-            <td>${reserva.personas}</td>
-            <td>${estadoTexto(reserva.estado)}</td>
-          `;
+          <td>${reserva.nombre}</td>
+          <td>${reserva.carnet || ''}</td>
+          <td>${reserva.hora}</td>
+          <td>${reserva.personas}</td>
+          <td>${estadoTexto(reserva.estado)}</td>
+        `;
                 tbody.appendChild(tr);
             });
 
-            // Actualizar contador
             document.getElementById(`${section}-count`).textContent = sectionData.length;
         }
 
-        // Obtener datos para la fecha actual
-        function getCurrentDateData() {
-            if (!data[currentDate]) {
-                data[currentDate] = {
-                    vip: [],
-                    regular: [],
-                    restaurante: []
-                };
-            }
-            return data[currentDate];
-        }
-
-        // Texto legible para estado
-        function estadoTexto(estado) {
-            switch (estado) {
-                case 'pending': return 'Pendiente';
-                case 'arrived': return 'Llegó';
-                case 'cancelled': return 'Cancelado';
-                default: return '';
-            }
-        }
-
-        // Actualizar total general, EXCLUYENDO reservas canceladas
         function updateTotalGeneral() {
             let total = 0;
             const currentData = getCurrentDateData();
@@ -941,159 +1056,113 @@
             document.getElementById('total-general').textContent = `Total general de personas (sin reservas canceladas): ${total}`;
         }
 
-        // Capitalizar palabras para encabezados
+        function estadoTexto(estado) {
+            switch (estado) {
+                case 'pending': return 'Pendiente';
+                case 'arrived': return 'Llegó';
+                case 'cancelled': return 'Cancelado';
+                default: return '';
+            }
+        }
+
         function capitalize(text) {
             return text.charAt(0).toUpperCase() + text.slice(1);
         }
 
-        // Manejo del formulario
-        const formContainer = document.getElementById('form-container');
-        const form = document.getElementById('form');
-
-        form.addEventListener('submit', e => {
+        // ===== MANEJO DE FORMULARIOS =====
+        async function handleFormSubmit(e) {
             e.preventDefault();
+
+            const form = e.target;
             const newReserva = {
                 nombre: form.nombre.value.trim(),
-                carnet: form.carnet.value.trim() || null, // Carnet es opcional
+                carnet: form.carnet.value.trim() || null,
                 hora: form.hora.value,
                 personas: Number(form.personas.value),
                 estado: form.estado.value
             };
 
-            const currentData = getCurrentDateData();
-
-            if (editIndex !== null) {
-                // Editar reserva existente
-                currentData[editSection][editIndex] = newReserva;
-            } else {
-                // Agregar nueva reserva
-                currentData[editSection].push(newReserva);
+            if (!newReserva.nombre || newReserva.nombre.length < 3) {
+                alert("El nombre debe tener al menos 3 caracteres");
+                return;
             }
 
-            renderSection(editSection);
-            updateTotalGeneral();
-            saveAllData();
-            closeForm();
-        });
+            if (newReserva.personas < 1 || newReserva.personas > 20) {
+                alert("Número de personas inválido (1-20)");
+                return;
+            }
 
-        // Cerrar formulario con botón cancelar
-        form.querySelector('.close-btn').addEventListener('click', () => {
-            closeForm();
-        });
+            try {
+                if (editIndex !== null) {
+                    await updateReservation(currentDate, editSection, editIndex, newReserva);
+                } else {
+                    await addReservation(currentDate, editSection, newReserva);
+                }
 
-        // Función cerrar formulario y limpiar
+                renderSection(editSection);
+                updateTotalGeneral();
+                closeForm();
+            } catch (error) {
+                console.error('Error al guardar reserva:', error);
+                alert("Error al guardar la reserva. Por favor intenta nuevamente.");
+            }
+        }
+
+        function openAddForm(section) {
+            editSection = section;
+            editIndex = null;
+
+            const form = document.getElementById('form');
+            form.reset();
+            form.querySelector('h3').textContent = `Agregar reserva en ${capitalize(section)}`;
+            form.querySelector('button[type="submit"]').textContent = 'Agregar';
+
+            document.getElementById('form-container').classList.add('active');
+            document.getElementById('input-nombre').focus();
+        }
+
+        function openEditForm(section, index) {
+            editSection = section;
+            editIndex = index;
+
+            const currentData = getCurrentDateData();
+            const item = currentData[section][index];
+            const form = document.getElementById('form');
+
+            form.querySelector('h3').textContent = `Editar reserva en ${capitalize(section)}`;
+            form.querySelector('button[type="submit"]').textContent = 'Guardar cambios';
+
+            form['nombre'].value = item.nombre;
+            form['carnet'].value = item.carnet || '';
+            form['hora'].value = item.hora;
+            form['personas'].value = item.personas;
+            form['estado'].value = item.estado;
+
+            document.getElementById('form-container').classList.add('active');
+            document.getElementById('input-nombre').focus();
+        }
+
         function closeForm() {
-            formContainer.classList.remove('active');
+            document.getElementById('form-container').classList.remove('active');
             editSection = null;
             editIndex = null;
-            form.reset();
-            // Limpiar autocompletado
+            document.getElementById('form').reset();
             document.getElementById('nombre-autocomplete').innerHTML = '';
         }
 
-        // Botones agregar en cada sección
-        sections.forEach(sec => {
-            const btnAdd = document.querySelector(`#${sec} .add-btn`);
-            btnAdd.addEventListener('click', () => openAddForm(sec));
-        });
-
-        // Guardar datos en localStorage
-        function saveAllData() {
-            localStorage.setItem('beachClubData', JSON.stringify(data));
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? '1' : '0');
-        }
-
-        // Cargar datos de localStorage
-        function loadAllData() {
-            const savedData = localStorage.getItem('beachClubData');
-            if (savedData) {
-                data = JSON.parse(savedData);
-            }
-
-            // Cargar datos para la fecha actual
-            loadDataForDate(currentDate);
-
-            if (localStorage.getItem('darkMode') === '1') {
-                document.body.classList.add('dark-mode');
-            }
-        }
-
-        // Cargar datos para una fecha específica
-        function loadDataForDate(date) {
-            currentDate = date;
-            document.getElementById('calendar').value = date;
-
-            // Si no hay datos para esta fecha, inicializar estructura
-            if (!data[date]) {
-                data[date] = {
-                    vip: [],
-                    regular: [],
-                    restaurante: []
-                };
-            }
-
-            // Renderizar todas las secciones
-            sections.forEach(sec => renderSection(sec));
-            updateTotalGeneral();
-        }
-
-        // Toggle menú de opciones
-        function toggleOptions() {
-            const menuButton = document.getElementById('menu-button');
-            const menu = document.getElementById('menu-options');
-
-            menuButton.classList.toggle('active');
-            menu.classList.toggle('active');
-
-            if (menu.classList.contains('active')) {
-                // Animación de entrada
-                menu.style.transform = 'translateY(0)';
-                menu.style.opacity = '1';
-                menu.style.visibility = 'visible';
-            } else {
-                // Animación de salida
-                menu.style.transform = 'translateY(-20px)';
-                menu.style.opacity = '0';
-                menu.style.visibility = 'hidden';
-            }
-        }
-
-        // Cerrar menú al hacer clic fuera
-        document.addEventListener('click', (e) => {
-            const menuButton = document.getElementById('menu-button');
-            const menu = document.getElementById('menu-options');
-
-            if (!menu.contains(e.target) && !menuButton.contains(e.target)) {
-                menuButton.classList.remove('active');
-                menu.classList.remove('active');
-                menu.style.transform = 'translateY(-20px)';
-                menu.style.opacity = '0';
-                menu.style.visibility = 'hidden';
-            }
-        });
-
-        // Toggle modo oscuro
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            saveAllData();
-            toggleOptions(); // Cerrar el menú después de seleccionar
-        }
-
-        // Abrir modal de búsqueda
+        // ===== BÚSQUEDA =====
         function openSearch() {
             document.getElementById('search-container').classList.add('active');
             document.getElementById('search-input').focus();
-            toggleOptions(); // Cerrar el menú
         }
 
-        // Cerrar modal de búsqueda
         function closeSearch() {
             document.getElementById('search-container').classList.remove('active');
             document.getElementById('search-results').innerHTML = '';
         }
 
-        // Buscar cliente
         document.getElementById('search-button').addEventListener('click', searchClient);
+        document.querySelector('#search-form .close-btn').addEventListener('click', closeSearch);
 
         function searchClient() {
             const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
@@ -1102,7 +1171,6 @@
             const resultsContainer = document.getElementById('search-results');
             resultsContainer.innerHTML = '';
 
-            // Buscar en todas las fechas
             let foundClients = {};
 
             for (const date in data) {
@@ -1130,7 +1198,6 @@
                 });
             }
 
-            // Mostrar resultados
             if (Object.keys(foundClients).length === 0) {
                 resultsContainer.innerHTML = '<p>No se encontraron clientes con ese nombre.</p>';
                 return;
@@ -1142,14 +1209,13 @@
                 clientElement.className = 'search-result-item';
 
                 let html = `
-            <div class="search-result-header">
-              <span>${nombre}</span>
-              ${client.carnet ? `<span>Carnet: ${client.carnet}</span>` : ''}
-            </div>
-            <div class="search-result-details">
-          `;
+          <div class="search-result-header">
+            <span>${nombre}</span>
+            ${client.carnet ? `<span>Carnet: ${client.carnet}</span>` : ''}
+          </div>
+          <div class="search-result-details">
+        `;
 
-                // Ordenar reservas por fecha (más reciente primero)
                 client.reservations.sort((a, b) => new Date(b.date) - new Date(a.date));
 
                 client.reservations.forEach(res => {
@@ -1161,14 +1227,14 @@
                     });
 
                     html += `
-              <div>
-                <strong>${fechaFormateada}</strong> -
-                ${capitalize(res.section)} |
-                ${res.hora} |
-                ${res.personas} persona${res.personas > 1 ? 's' : ''} |
-                Estado: ${estadoTexto(res.estado)}
-              </div>
-            `;
+            <div>
+              <strong>${fechaFormateada}</strong> -
+              ${capitalize(res.section)} |
+              ${res.hora} |
+              ${res.personas} persona${res.personas > 1 ? 's' : ''} |
+              Estado: ${estadoTexto(res.estado)}
+            </div>
+          `;
                 });
 
                 html += `</div>`;
@@ -1177,7 +1243,7 @@
             }
         }
 
-        // Autocompletado para nombres
+        // ===== AUTCOMPLETADO =====
         document.getElementById('input-nombre').addEventListener('input', function () {
             const input = this.value.trim();
             const autocompleteList = document.getElementById('nombre-autocomplete');
@@ -1185,7 +1251,6 @@
 
             if (input.length < 2) return;
 
-            // Buscar nombres similares en todas las reservas
             const names = new Set();
 
             for (const date in data) {
@@ -1201,14 +1266,12 @@
 
             if (names.size === 0) return;
 
-            // Mostrar sugerencias
             names.forEach(name => {
                 const item = document.createElement('div');
                 item.textContent = name;
                 item.addEventListener('click', function () {
                     document.getElementById('input-nombre').value = name;
 
-                    // Buscar el carnet más reciente para este nombre
                     let latestReservation = null;
                     for (const date in data) {
                         sections.forEach(section => {
@@ -1233,47 +1296,78 @@
             });
         });
 
-        // Cerrar autocompletado al hacer clic fuera
         document.addEventListener('click', function (e) {
             if (e.target.id !== 'input-nombre') {
                 document.getElementById('nombre-autocomplete').innerHTML = '';
             }
         });
 
-        // Inicializar vista
-        document.addEventListener('DOMContentLoaded', () => {
+        // ===== MODO OSCURO =====
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            saveAllData();
+        }
+
+        // ===== INICIALIZACIÓN =====
+        function init() {
             // Configurar calendario
             const calendar = document.getElementById('calendar');
-            const today = new Date().toISOString().split('T')[0];
-            calendar.value = today;
+            calendar.value = currentDate;
 
-            // Manejar cambios en el calendario
             calendar.addEventListener('change', (e) => {
-                const selectedDate = e.target.value;
-                loadDataForDate(selectedDate);
+                currentDate = e.target.value;
+                loadDataForDate(currentDate);
             });
 
-            // Permitir búsqueda al presionar Enter
-            document.getElementById('search-input').addEventListener('keypress', (e) => {
+            // Inicializar acordeones
+            sections.forEach(sec => {
+                const btn = document.querySelector(`#${sec} > .accordion-btn`);
+                const content = document.getElementById(`${sec}-content`);
+
+                btn.addEventListener('click', () => {
+                    const expanded = btn.getAttribute('aria-expanded') === 'true';
+                    btn.setAttribute('aria-expanded', !expanded);
+                    content.classList.toggle('active');
+                    content.setAttribute('aria-hidden', expanded);
+                    document.getElementById(sec).classList.toggle('expanded');
+                });
+
+                btn.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        btn.click();
+                    }
+                });
+            });
+
+            // Botones agregar
+            sections.forEach(sec => {
+                document.querySelector(`#${sec} .add-btn`).addEventListener('click', () => openAddForm(sec));
+            });
+
+            // Formulario
+            document.getElementById('form').addEventListener('submit', handleFormSubmit);
+            document.querySelector('#form .close-btn').addEventListener('click', closeForm);
+
+            // Búsqueda
+            document.getElementById('search-input').addEventListener('keypress', e => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     searchClient();
                 }
             });
 
-            // Cargar datos iniciales
+            // Cargar datos
             loadAllData();
-        });
 
-        // Teclado accesible para acordeones: abrir con Enter o espacio
-        document.querySelectorAll('.accordion-btn').forEach(btn => {
-            btn.addEventListener('keydown', e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    btn.click();
-                }
-            });
-        });
+            // Inicializar modo oscuro
+            if (localStorage.getItem('darkMode') === '1') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+
+        // Iniciar la aplicación
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
