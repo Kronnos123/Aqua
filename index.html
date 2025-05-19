@@ -644,6 +644,11 @@
                 background: #06d6a0;
             }
 
+            .toast.warning {
+                background: #ffd166;
+                color: #333;
+            }
+
             .toast i {
                 font-size: 1.1rem;
             }
@@ -958,6 +963,7 @@
         <div class="menu-options">
             <button id="dark-mode-toggle"><i class="fas fa-moon"></i> Modo oscuro</button>
             <button id="search-toggle"><i class="fas fa-search"></i> Buscar cliente</button>
+            <button id="refresh-data"><i class="fas fa-sync-alt"></i> Actualizar datos</button>
         </div>
     </div>
 
@@ -972,13 +978,14 @@
         let editIndex = null;
         let data = {};
         let isOnline = true;
+        let isInitialLoad = true;
+        let lastSyncTime = null;
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', () => {
             initAccordions();
             setupEventListeners();
             checkConnection();
-            loadAllData();
 
             // Configurar calendario
             const calendar = document.getElementById('calendar');
@@ -993,9 +1000,73 @@
                 document.body.classList.add('dark-mode');
                 document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-sun"></i> Modo claro';
             }
+
+            // Cargar datos iniciales
+            loadInitialData();
         });
 
-        // Funciones principales
+        // Función mejorada para carga inicial
+        async function loadInitialData() {
+            try {
+                showToast('Cargando datos...', 'info');
+
+                // Primero intentar cargar desde caché para mostrar algo rápido
+                const cachedData = localStorage.getItem('beachClubData');
+                if (cachedData) {
+                    data = JSON.parse(cachedData);
+                    loadDataForDate(currentDate);
+                    showToast('Datos cargados desde caché', 'warning');
+                }
+
+                // Luego intentar cargar desde el servidor
+                if (isOnline) {
+                    await fetchAndUpdateData();
+                }
+
+            } catch (error) {
+                console.error('Error en carga inicial:', error);
+                showToast('Error al cargar datos iniciales', 'error');
+            } finally {
+                isInitialLoad = false;
+            }
+        }
+
+        // Función mejorada para obtener datos del servidor
+        async function fetchAndUpdateData() {
+            try {
+                showToast('Actualizando datos desde el servidor...', 'info');
+
+                const response = await fetch(`${API_URL}?operation=getData&timestamp=${new Date().getTime()}`);
+                if (!response.ok) throw new Error('Error al obtener datos');
+
+                const serverData = await response.json();
+
+                // Verificar si hay cambios
+                if (JSON.stringify(data) !== JSON.stringify(serverData)) {
+                    data = serverData;
+                    localStorage.setItem('beachClubData', JSON.stringify(data));
+                    localStorage.setItem('lastSyncTime', new Date().toISOString());
+                    lastSyncTime = new Date();
+
+                    loadDataForDate(currentDate);
+                    showToast('Datos actualizados correctamente', 'success');
+                } else {
+                    showToast('Los datos ya están actualizados', 'info');
+                }
+
+            } catch (error) {
+                console.error('Error al actualizar datos:', error);
+                showToast('Error al actualizar datos. Usando versión en caché', 'error');
+
+                // Intentar cargar desde caché si falla la conexión
+                const cachedData = localStorage.getItem('beachClubData');
+                if (cachedData) {
+                    data = JSON.parse(cachedData);
+                    loadDataForDate(currentDate);
+                }
+            }
+        }
+
         function initAccordions() {
             sections.forEach(section => {
                 const header = document.getElementById(`${section}-header`);
@@ -1043,6 +1114,11 @@
             // Opciones del menú
             document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
             document.getElementById('search-toggle').addEventListener('click', openSearch);
+            document.getElementById('refresh-data').addEventListener('click', () => {
+                fetchAndUpdateData();
+                document.querySelector('.menu-button').classList.remove('active');
+                document.querySelector('.menu-options').classList.remove('active');
+            });
 
             // Cerrar menú al hacer clic fuera
             document.addEventListener('click', () => {
@@ -1101,41 +1177,11 @@
                 // Limpiar cambios pendientes después de sincronizar
                 localStorage.removeItem('pendingChanges');
                 showToast('Cambios sincronizados correctamente', 'success');
-                loadAllData(); // Recargar datos actualizados
+                await fetchAndUpdateData(); // Recargar datos actualizados
 
             } catch (error) {
                 console.error('Error al sincronizar:', error);
                 showToast('Error al sincronizar cambios. Reintentando más tarde...', 'error');
-            }
-        }
-
-        async function loadAllData() {
-            try {
-                if (!isOnline) {
-                    const savedData = localStorage.getItem('beachClubData');
-                    if (savedData) {
-                        data = JSON.parse(savedData);
-                        loadDataForDate(currentDate);
-                    }
-                    return;
-                }
-
-                const response = await fetch(`${API_URL}?operation=getData`);
-                if (!response.ok) throw new Error('Error al cargar datos');
-
-                const serverData = await response.json();
-                data = serverData;
-                localStorage.setItem('beachClubData', JSON.stringify(data));
-                loadDataForDate(currentDate);
-
-            } catch (error) {
-                console.error('Error:', error);
-                const savedData = localStorage.getItem('beachClubData');
-                if (savedData) {
-                    data = JSON.parse(savedData);
-                    loadDataForDate(currentDate);
-                }
-                showToast('Error al cargar datos. Usando caché local.', 'error');
             }
         }
 
@@ -1144,6 +1190,16 @@
             if (!data[date]) {
                 data[date] = { vip: [], regular: [], restaurante: [] };
             }
+
+            // Ordenar reservas por hora
+            sections.forEach(section => {
+                if (data[date][section]) {
+                    data[date][section].sort((a, b) => {
+                        return a.hora.localeCompare(b.hora);
+                    });
+                }
+            });
+
             sections.forEach(section => renderSection(section));
             updateTotalGeneral();
         }
@@ -1242,7 +1298,8 @@
                 carnet: form.carnet.value.trim() || null,
                 hora: form.hora.value,
                 personas: Number(form.personas.value),
-                estado: form.estado.value
+                estado: form.estado.value,
+                timestamp: new Date().toISOString() // Agregar marca de tiempo
             };
 
             // Validación
@@ -1279,8 +1336,14 @@
                         params.index = editIndex;
                     }
 
+                    // Agregar parámetro único para evitar caché
+                    params.timestamp = new Date().getTime();
+
                     const response = await fetch(`${API_URL}?${new URLSearchParams(params)}`);
                     if (!response.ok) throw new Error('Error al guardar');
+
+                    // Forzar actualización de datos después de guardar
+                    await fetchAndUpdateData();
                 } else {
                     // Guardar cambio pendiente para sincronizar luego
                     const operation = editIndex !== null ? 'updateReservation' : 'addReservation';
@@ -1288,7 +1351,8 @@
                         operation,
                         date: currentDate,
                         section: editSection,
-                        reservation: JSON.stringify(reserva)
+                        reservation: JSON.stringify(reserva),
+                        timestamp: new Date().getTime()
                     };
 
                     if (operation === 'updateReservation') {
@@ -1300,7 +1364,7 @@
                     localStorage.setItem('pendingChanges', JSON.stringify(pendingChanges));
                 }
 
-                // Actualizar datos locales
+                // Actualizar datos locales inmediatamente
                 if (!data[currentDate]) data[currentDate] = { vip: [], regular: [], restaurante: [] };
 
                 if (editIndex !== null) {
@@ -1520,6 +1584,7 @@
             if (type === 'error') icon = '<i class="fas fa-exclamation-circle"></i>';
             if (type === 'success') icon = '<i class="fas fa-check-circle"></i>';
             if (type === 'info') icon = '<i class="fas fa-info-circle"></i>';
+            if (type === 'warning') icon = '<i class="fas fa-exclamation-triangle"></i>';
 
             toast.innerHTML = `${icon} ${message}`;
             toast.className = `toast ${type} show`;
