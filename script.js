@@ -1,13 +1,11 @@
 // Configuración
-const API_URL = 'https://script.google.com/macros/s/AKfycbybZvefPe9w8JQijcf1FTfuAljN8aPogy0M--W00mjPa3lw9UE-nVVc2O7wTE_Z1FZt/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxckGBzOu22KRVLwH08ot1QgMyBgtkWYmLer_BzEbFqGyT7OXuIJsm11GwdIflU0ABj/exec';
 const sections = ['vip', 'regular', 'restaurante'];
 let currentDate = new Date().toISOString().split('T')[0];
 let editSection = null;
 let editIndex = null;
 let data = {};
 let isOnline = true;
-let isInitialLoad = true;
-let lastSyncTime = null;
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     checkConnection();
 
-    // Configurar calendario
     const calendar = document.getElementById('calendar');
     calendar.value = currentDate;
     calendar.addEventListener('change', (e) => {
@@ -23,76 +20,148 @@ document.addEventListener('DOMContentLoaded', () => {
         loadDataForDate(currentDate);
     });
 
-    // Iniciar modo oscuro si estaba activo
-    if (localStorage.getItem('darkMode') === '1') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-sun"></i> Modo claro';
-    }
-
-    // Cargar datos iniciales
     loadInitialData();
 });
 
-// Función mejorada para carga inicial
 async function loadInitialData() {
+    showToast('Cargando datos...', 'info');
+    
     try {
-        showToast('Cargando datos...', 'info');
-
-        // Primero intentar cargar desde caché para mostrar algo rápido
-        const cachedData = localStorage.getItem('beachClubData');
-        if (cachedData) {
-            data = JSON.parse(cachedData);
-            loadDataForDate(currentDate);
-            showToast('Datos cargados desde caché', 'warning');
-        }
-
-        // Luego intentar cargar desde el servidor
+        // Primero intentar cargar desde el servidor
         if (isOnline) {
             await fetchAndUpdateData();
         }
-
-    } catch (error) {
-        console.error('Error en carga inicial:', error);
-        showToast('Error al cargar datos iniciales', 'error');
-    } finally {
-        isInitialLoad = false;
-    }
-}
-
-// Función mejorada para obtener datos del servidor
-async function fetchAndUpdateData() {
-    try {
-        showToast('Actualizando datos desde el servidor...', 'info');
-
-        const response = await fetch(`${API_URL}?operation=getData&timestamp=${new Date().getTime()}`);
-        if (!response.ok) throw new Error('Error al obtener datos');
-
-        const serverData = await response.json();
-
-        // Verificar si hay cambios
-        if (JSON.stringify(data) !== JSON.stringify(serverData)) {
-            data = serverData;
-            localStorage.setItem('beachClubData', JSON.stringify(data));
-            localStorage.setItem('lastSyncTime', new Date().toISOString());
-            lastSyncTime = new Date();
-
-            loadDataForDate(currentDate);
-            showToast('Datos actualizados correctamente', 'success');
-        } else {
-            showToast('Los datos ya están actualizados', 'info');
-        }
-
-    } catch (error) {
-        console.error('Error al actualizar datos:', error);
-        showToast('Error al actualizar datos. Usando versión en caché', 'error');
-
-        // Intentar cargar desde caché si falla la conexión
+        
+        // Si falla o no hay conexión, cargar desde caché
         const cachedData = localStorage.getItem('beachClubData');
         if (cachedData) {
             data = JSON.parse(cachedData);
             loadDataForDate(currentDate);
+            if (!isOnline) {
+                showToast('Datos cargados desde caché', 'warning');
+            }
         }
+    } catch (error) {
+        console.error('Error en carga inicial:', error);
+        showToast('Error al cargar datos', 'error');
     }
+}
+
+async function fetchAndUpdateData() {
+    try {
+        showToast('Sincronizando con el servidor...', 'info');
+        const response = await fetch(`${API_URL}?operation=getAllData&timestamp=${Date.now()}`);
+        if (!response.ok) throw new Error('Error en la respuesta del servidor');
+        
+        const serverData = await response.json();
+        if (!serverData || typeof serverData !== 'object') throw new Error('Datos inválidos');
+
+        // Normalizar datos del servidor
+        const normalizedData = normalizeServerData(serverData);
+        
+        // Actualizar datos locales
+        data = normalizedData;
+        localStorage.setItem('beachClubData', JSON.stringify(data));
+        localStorage.setItem('lastSyncTime', new Date().toISOString());
+        
+        loadDataForDate(currentDate);
+        showToast('Datos actualizados correctamente', 'success');
+        return true;
+    } catch (error) {
+        console.error('Error al sincronizar:', error);
+        showToast('Error al actualizar datos. Usando versión en caché', 'error');
+        return false;
+    }
+}
+
+function normalizeServerData(serverData) {
+    const normalized = {};
+    
+    // Convertir todas las fechas al formato YYYY-MM-DD
+    Object.keys(serverData).forEach(date => {
+        const formattedDate = date.split('T')[0];
+        normalized[formattedDate] = {};
+        
+        sections.forEach(section => {
+            normalized[formattedDate][section] = serverData[date][section] || [];
+            
+            // Asegurar que cada reserva tenga todos los campos necesarios
+            normalized[formattedDate][section] = normalized[formattedDate][section].map(reserva => ({
+                nombre: reserva.nombre || '',
+                carnet: reserva.carnet || null,
+                hora: reserva.hora || '00:00',
+                personas: Number(reserva.personas) || 1,
+                estado: reserva.estado || 'pending',
+                timestamp: reserva.timestamp || new Date().toISOString()
+            }));
+        });
+    });
+    
+    return normalized;
+}
+
+function loadDataForDate(date) {
+    currentDate = date;
+    if (!data[date]) {
+        data[date] = { vip: [], regular: [], restaurante: [] };
+    }
+
+    // Ordenar reservas por hora
+    sections.forEach(section => {
+        if (data[date][section]) {
+            data[date][section].sort((a, b) => a.hora.localeCompare(b.hora));
+        }
+    });
+
+    renderAllSections();
+    updateTotalGeneral();
+}
+
+function renderAllSections() {
+    sections.forEach(section => renderSection(section));
+}
+
+function renderSection(section) {
+    const tbody = document.querySelector(`#${section} tbody`);
+    tbody.innerHTML = '';
+
+    const sectionData = data[currentDate]?.[section] || [];
+    sectionData.forEach((reserva, index) => {
+        const tr = document.createElement('tr');
+        tr.className = reserva.estado;
+        tr.innerHTML = `
+            <td>${reserva.nombre}</td>
+            <td>${reserva.carnet || ''}</td>
+            <td>${reserva.hora}</td>
+            <td>${reserva.personas}</td>
+            <td>${getStatusText(reserva.estado)}</td>
+        `;
+        tr.addEventListener('click', () => openEditForm(section, index));
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById(`${section}-count`).textContent = sectionData.length;
+}
+
+function updateTotalGeneral() {
+    let total = 0;
+    sections.forEach(section => {
+        (data[currentDate]?.[section] || []).forEach(reserva => {
+            if (reserva.estado !== 'cancelled') {
+                total += Number(reserva.personas);
+            }
+        });
+    });
+    document.getElementById('total-count').textContent = total;
+}
+
+function getStatusText(status) {
+    const statusMap = {
+        pending: 'Pendiente',
+        arrived: 'Llegó',
+        cancelled: 'Cancelado'
+    };
+    return statusMap[status] || '';
 }
 
 function initAccordions() {
@@ -142,16 +211,12 @@ function setupEventListeners() {
     // Opciones del menú
     document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
     document.getElementById('search-toggle').addEventListener('click', openSearch);
-    document.getElementById('refresh-data').addEventListener('click', () => {
-        fetchAndUpdateData();
-        document.querySelector('.menu-button').classList.remove('active');
-        document.querySelector('.menu-options').classList.remove('active');
-    });
+    document.getElementById('refresh-data').addEventListener('click', handleRefreshData);
 
     // Cerrar menú al hacer clic fuera
     document.addEventListener('click', () => {
         menuOptions.classList.remove('active');
-        document.querySelector('.menu-button').classList.remove('active');
+        menuButton.classList.remove('active');
     });
 
     // Evitar que el menú se cierre al hacer clic dentro
@@ -171,23 +236,30 @@ function setupEventListeners() {
     setInterval(checkConnection, 30000);
 
     // Manejar cambios de conexión
-    window.addEventListener('online', () => {
-        isOnline = true;
-        showToast('Conexión restablecida. Sincronizando datos...', 'success');
-        syncLocalChanges();
-    });
+    window.addEventListener('online', handleOnlineStatus);
+    window.addEventListener('offline', handleOfflineStatus);
+}
 
-    window.addEventListener('offline', () => {
-        isOnline = false;
-        showToast('Estás trabajando sin conexión. Los cambios se sincronizarán cuando vuelvas a estar en línea.', 'error');
-    });
+async function handleRefreshData() {
+    showToast('Actualizando datos...', 'info');
+    await fetchAndUpdateData();
+    document.querySelector('.menu-button').classList.remove('active');
+    document.querySelector('.menu-options').classList.remove('active');
+}
+
+function handleOnlineStatus() {
+    isOnline = true;
+    showToast('Conexión restablecida. Sincronizando datos...', 'success');
+    syncLocalChanges();
+}
+
+function handleOfflineStatus() {
+    isOnline = false;
+    showToast('Estás trabajando sin conexión. Los cambios se sincronizarán cuando vuelvas a estar en línea.', 'error');
 }
 
 function checkConnection() {
     isOnline = navigator.onLine;
-    if (!isOnline) {
-        showToast('Estás trabajando sin conexión. Los cambios se sincronizarán cuando vuelvas a estar en línea.', 'error');
-    }
 }
 
 async function syncLocalChanges() {
@@ -202,10 +274,9 @@ async function syncLocalChanges() {
             if (!response.ok) throw new Error('Error al sincronizar');
         }
 
-        // Limpiar cambios pendientes después de sincronizar
         localStorage.removeItem('pendingChanges');
         showToast('Cambios sincronizados correctamente', 'success');
-        await fetchAndUpdateData(); // Recargar datos actualizados
+        await fetchAndUpdateData();
 
     } catch (error) {
         console.error('Error al sincronizar:', error);
@@ -213,71 +284,6 @@ async function syncLocalChanges() {
     }
 }
 
-function loadDataForDate(date) {
-    currentDate = date;
-    if (!data[date]) {
-        data[date] = { vip: [], regular: [], restaurante: [] };
-    }
-
-    // Ordenar reservas por hora
-    sections.forEach(section => {
-        if (data[date][section]) {
-            data[date][section].sort((a, b) => {
-                return a.hora.localeCompare(b.hora);
-            });
-        }
-    });
-
-    sections.forEach(section => renderSection(section));
-    updateTotalGeneral();
-}
-
-function renderSection(section) {
-    const tbody = document.querySelector(`#${section} tbody`);
-    tbody.innerHTML = '';
-
-    const sectionData = data[currentDate]?.[section] || [];
-
-    sectionData.forEach((reserva, index) => {
-        const tr = document.createElement('tr');
-        tr.className = reserva.estado;
-        tr.innerHTML = `
-            <td>${reserva.nombre}</td>
-            <td>${reserva.carnet || ''}</td>
-            <td>${reserva.hora}</td>
-            <td>${reserva.personas}</td>
-            <td>${getStatusText(reserva.estado)}</td>
-        `;
-        tr.addEventListener('click', () => openEditForm(section, index));
-        tbody.appendChild(tr);
-    });
-
-    document.getElementById(`${section}-count`).textContent = sectionData.length;
-}
-
-function updateTotalGeneral() {
-    let total = 0;
-    sections.forEach(section => {
-        (data[currentDate]?.[section] || []).forEach(reserva => {
-            if (reserva.estado !== 'cancelled') {
-                total += Number(reserva.personas);
-            }
-        });
-    });
-    document.getElementById('total-general').textContent =
-        `Total general de personas (sin reservas canceladas): ${total}`;
-}
-
-function getStatusText(status) {
-    const statusMap = {
-        pending: 'Pendiente',
-        arrived: 'Llegó',
-        cancelled: 'Cancelado'
-    };
-    return statusMap[status] || '';
-}
-
-// Funciones de formulario
 function openAddForm(section) {
     editSection = section;
     editIndex = null;
@@ -321,16 +327,24 @@ async function handleFormSubmit(e) {
     e.preventDefault();
 
     const form = e.target;
+    const horaValue = form.hora.value;
+    
+    // Validación de hora
+    if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(horaValue)) {
+        showToast('Por favor ingresa una hora válida (formato 24 horas, ej: 14:30)', 'error');
+        return;
+    }
+
     const reserva = {
         nombre: form.nombre.value.trim(),
         carnet: form.carnet.value.trim() || null,
-        hora: form.hora.value,
+        hora: horaValue,
         personas: Number(form.personas.value),
         estado: form.estado.value,
-        timestamp: new Date().toISOString() // Agregar marca de tiempo
+        timestamp: new Date().toISOString()
     };
 
-    // Validación
+    // Validación adicional
     if (reserva.nombre.length < 3) {
         showToast('El nombre debe tener al menos 3 caracteres', 'error');
         return;
@@ -338,15 +352,6 @@ async function handleFormSubmit(e) {
     if (reserva.personas < 1 || reserva.personas > 20) {
         showToast('Número de personas inválido (1-20)', 'error');
         return;
-    }
-
-    // Verificar duplicados (solo para nuevas reservas)
-    if (editIndex === null) {
-        const hasDuplicate = checkDuplicateReservation(reserva);
-        if (hasDuplicate) {
-            showToast('Esta persona ya tiene una reserva para esta fecha y sección', 'error');
-            return;
-        }
     }
 
     try {
@@ -357,21 +362,16 @@ async function handleFormSubmit(e) {
                 operation,
                 date: currentDate,
                 section: editSection,
-                reservation: JSON.stringify(reserva)
+                reservation: JSON.stringify(reserva),
+                timestamp: Date.now()
             };
 
             if (operation === 'updateReservation') {
                 params.index = editIndex;
             }
 
-            // Agregar parámetro único para evitar caché
-            params.timestamp = new Date().getTime();
-
             const response = await fetch(`${API_URL}?${new URLSearchParams(params)}`);
             if (!response.ok) throw new Error('Error al guardar');
-
-            // Forzar actualización de datos después de guardar
-            await fetchAndUpdateData();
         } else {
             // Guardar cambio pendiente para sincronizar luego
             const operation = editIndex !== null ? 'updateReservation' : 'addReservation';
@@ -380,7 +380,7 @@ async function handleFormSubmit(e) {
                 date: currentDate,
                 section: editSection,
                 reservation: JSON.stringify(reserva),
-                timestamp: new Date().getTime()
+                timestamp: Date.now()
             };
 
             if (operation === 'updateReservation') {
@@ -422,22 +422,12 @@ async function handleFormSubmit(e) {
     }
 }
 
-function checkDuplicateReservation(newReserva) {
-    const sectionData = data[currentDate]?.[editSection] || [];
-    return sectionData.some((reserva, index) =>
-        reserva.nombre.toLowerCase() === newReserva.nombre.toLowerCase() &&
-        reserva.estado !== 'cancelled' &&
-        (editIndex === null || index !== editIndex)
-    );
-}
-
 function closeForm() {
     document.getElementById('form-container').classList.remove('active');
     editSection = null;
     editIndex = null;
 }
 
-// Búsqueda
 function openSearch() {
     document.getElementById('search-container').classList.add('active');
     document.getElementById('search-input').focus();
@@ -527,7 +517,6 @@ function searchClient() {
     }
 }
 
-// Autocompletado
 function showAutocomplete() {
     const input = document.getElementById('input-nombre').value.trim();
     const autocompleteList = document.getElementById('nombre-autocomplete');
@@ -588,7 +577,6 @@ function showAutocomplete() {
     autocompleteList.style.display = 'block';
 }
 
-// Modo oscuro
 function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     const darkModeBtn = document.getElementById('dark-mode-toggle');
@@ -603,7 +591,6 @@ function toggleDarkMode() {
     document.querySelector('.menu-options').classList.remove('active');
 }
 
-// Notificaciones toast
 function showToast(message, type = 'info') {
     const toast = document.getElementById('toast');
     toast.innerHTML = '';
@@ -622,7 +609,6 @@ function showToast(message, type = 'info') {
     }, 5000);
 }
 
-// Utilidades
 function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 }

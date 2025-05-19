@@ -100,7 +100,7 @@ header {
 .section-header:focus {
     background-color: #036b80;
     transform: scale(1.02);
-    box-shadow: 0 6px 14px rgba(3,107,128,0.5);
+    box-shadow: 0 6px 14px rgba(3, 107, 128, 0.5);
     outline: none;
 }
 
@@ -247,15 +247,6 @@ tbody tr:hover {
 .modal.active {
     display: flex;
     opacity: 1;
-}
-
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
 }
 
 .modal-content {

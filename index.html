@@ -16,7 +16,7 @@
     </div>
     <main class="container">
         <section id="vip" class="section">
-            <button class="section-header" id="vip-header">
+            <button class="section-header" id="vip-header" aria-expanded="false" aria-controls="vip-content">
                 <span>Reservas VIP</span>
                 <span class="count" id="vip-count">0</span>
             </button>
@@ -24,11 +24,11 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Nombre</th>
-                            <th>Carnet</th>
-                            <th>Hora</th>
-                            <th>Personas</th>
-                            <th>Estado</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Carnet</th>
+                            <th scope="col">Hora</th>
+                            <th scope="col">Personas</th>
+                            <th scope="col">Estado</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -37,7 +37,7 @@
             </div>
         </section>
         <section id="regular" class="section">
-            <button class="section-header" id="regular-header">
+            <button class="section-header" id="regular-header" aria-expanded="false" aria-controls="regular-content">
                 <span>Reservas Regular</span>
                 <span class="count" id="regular-count">0</span>
             </button>
@@ -45,11 +45,11 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Nombre</th>
-                            <th>Carnet</th>
-                            <th>Hora</th>
-                            <th>Personas</th>
-                            <th>Estado</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Carnet</th>
+                            <th scope="col">Hora</th>
+                            <th scope="col">Personas</th>
+                            <th scope="col">Estado</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -58,7 +58,7 @@
             </div>
         </section>
         <section id="restaurante" class="section">
-            <button class="section-header" id="restaurante-header">
+            <button class="section-header" id="restaurante-header" aria-expanded="false" aria-controls="restaurante-content">
                 <span>Reservas Restaurante</span>
                 <span class="count" id="restaurante-count">0</span>
             </button>
@@ -66,11 +66,11 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Nombre</th>
-                            <th>Carnet</th>
-                            <th>Hora</th>
-                            <th>Personas</th>
-                            <th>Estado</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Carnet</th>
+                            <th scope="col">Hora</th>
+                            <th scope="col">Personas</th>
+                            <th scope="col">Estado</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -81,7 +81,7 @@
     </main>
 
     <div id="total-general">
-        Total general de personas (sin reservas canceladas): 0
+        Total general de personas (sin reservas canceladas): <span id="total-count">0</span>
     </div>
 
     <div id="form-container" class="modal">
@@ -90,26 +90,21 @@
                 <h3 id="form-title">Agregar reserva</h3>
                 <div class="autocomplete">
                     <label for="input-nombre">Nombre</label>
-                    <input id="input-nombre" name="nombre" type="text" autocomplete="off" required />
+                    <input id="input-nombre" name="nombre" type="text" autocomplete="off" required placeholder="Ej: Juan Pérez" />
                     <div id="nombre-autocomplete" class="autocomplete-items"></div>
                 </div>
-
                 <label for="input-carnet">Carnet (opcional)</label>
-                <input id="input-carnet" name="carnet" type="text" autocomplete="off" />
-
+                <input id="input-carnet" name="carnet" type="text" autocomplete="off" placeholder="Ej: 123456" />
                 <label for="input-hora">Hora</label>
-                <input id="input-hora" name="hora" type="time" required />
-
+                <input id="input-hora" name="hora" type="time" required min="00:00" max="23:59" />
                 <label for="input-personas">Personas</label>
-                <input id="input-personas" name="personas" type="number" min="1" max="20" required />
-
+                <input id="input-personas" name="personas" type="number" min="1" max="20" required placeholder="1-20" />
                 <label for="input-estado">Estado</label>
                 <select id="input-estado" name="estado" required>
                     <option value="pending">Pendiente</option>
                     <option value="arrived">Llegó</option>
                     <option value="cancelled">Cancelado</option>
                 </select>
-
                 <button type="submit">Guardar</button>
                 <button type="button" class="close-btn">Cancelar</button>
             </form>
@@ -130,7 +125,7 @@
     </div>
 
     <div class="floating-menu">
-        <button class="menu-button">⋮</button>
+        <button class="menu-button" aria-label="Menú de acciones">⋮</button>
         <div class="menu-options">
             <button id="dark-mode-toggle"><i class="fas fa-moon"></i> Modo oscuro</button>
             <button id="search-toggle"><i class="fas fa-search"></i> Buscar cliente</button>
@@ -138,7 +133,7 @@
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div class="toast" id="toast" aria-live="polite"></div>
 
     <script src="script.js"></script>
 </body>
