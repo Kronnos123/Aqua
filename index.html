@@ -8,10 +8,11 @@
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #ccefff, #f0faff);
             color: #222;
@@ -25,12 +26,14 @@
         }
 
         header {
-            font-size: 2.6rem;
+            font-size: clamp(1.8rem, 5vw, 2.6rem);
             font-weight: 700;
             color: #05668d;
             margin: 1.5rem 0 0.5rem 0;
             user-select: none;
             text-align: center;
+            width: 100%;
+            padding: 0 10px;
         }
 
         .date-container {
@@ -38,6 +41,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
             .date-container label {
@@ -56,7 +61,7 @@
         .container {
             width: 100%;
             max-width: 680px;
-            padding: 0 20px 60px 20px;
+            padding: 0 20px 60px;
         }
 
         .section {
@@ -78,8 +83,8 @@
             background: #0487a0;
             color: white;
             border: none;
-            padding: 18px 24px;
-            font-size: 1.35rem;
+            padding: 16px 20px;
+            font-size: clamp(1.1rem, 3vw, 1.35rem);
             font-weight: 700;
             text-align: left;
             cursor: pointer;
@@ -89,14 +94,13 @@
             align-items: center;
             user-select: none;
             border-radius: 12px;
-            transition: background-color 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s ease;
-            will-change: transform, box-shadow;
+            transition: all 0.3s ease;
         }
 
             .section-header:hover,
             .section-header:focus {
                 background-color: #036b80;
-                transform: scale(1.03);
+                transform: scale(1.02);
                 box-shadow: 0 6px 14px rgba(3,107,128,0.5);
                 outline: none;
             }
@@ -106,26 +110,25 @@
             overflow: hidden;
             opacity: 0;
             transform: translateY(-8px);
-            transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease, transform 0.35s ease;
+            transition: all 0.4s ease;
             background: #f7fcff;
             border-radius: 0 0 12px 12px;
-            padding: 0 24px;
+            padding: 0 15px;
         }
 
             .section-content.active {
-                max-height: 800px;
+                max-height: 1000px;
                 opacity: 1;
                 transform: translateY(0);
-                padding-top: 18px;
-                padding-bottom: 25px;
+                padding: 15px;
                 box-shadow: inset 0 2px 8px rgba(5, 102, 141, 0.1);
-                display: block;
             }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            table-layout: fixed;
         }
 
         thead {
@@ -134,79 +137,70 @@
         }
 
         th, td {
-            padding: 10px 14px;
+            padding: 10px 8px;
             text-align: left;
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            word-break: break-word;
         }
 
         tbody tr {
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             cursor: pointer;
-            border-radius: 8px;
-            box-shadow: inset 0 0 0 0 transparent;
-            min-height: 48px;
         }
 
-        tr.pending, .guest-pendiente {
-            background: #d9e9f7;
-            color: #036b80;
-        }
-
-        tr.arrived, .guest-llego {
-            background: #c9e6b9;
-            color: #2e6b26;
-        }
-
-        tr.cancelled, .guest-cancelado {
-            background: #f9d6d5;
-            color: #9c2b25;
-            text-decoration: line-through;
-        }
-
-        tbody tr:hover,
-        tbody tr:focus {
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-            outline: none;
-        }
-
-        .guest-name {
-            cursor: pointer;
-            text-decoration: underline;
-            color: #007bff;
-        }
-
-        button {
-            margin: 10px;
-            padding: 8px 12px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-            button:hover {
-                background: #0056b3;
+            tbody tr.pending {
+                background: #d9e9f7;
+                color: #036b80;
             }
+
+            tbody tr.arrived {
+                background: #c9e6b9;
+                color: #2e6b26;
+            }
+
+            tbody tr.cancelled {
+                background: #f9d6d5;
+                color: #9c2b25;
+                text-decoration: line-through;
+            }
+
+            tbody tr:hover {
+                transform: scale(1.01);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+        .count {
+            min-width: 28px;
+            height: 28px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            background: #ef476f;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px #ef476faa;
+            margin-left: 12px;
+        }
 
         .add-btn {
             background: #028090;
             border: none;
             color: white;
-            padding: 14px 0;
-            font-size: 1.15rem;
+            padding: 12px 0;
+            font-size: clamp(1rem, 3vw, 1.15rem);
             border-radius: 8px;
             cursor: pointer;
-            width: calc(100% - 20px);
-            margin: 10px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin: 10px 0 0;
         }
 
             .add-btn:hover,
             .add-btn:focus {
                 background: #05668d;
-                transform: scale(1.05);
+                transform: scale(1.02);
                 outline: none;
             }
 
@@ -226,58 +220,51 @@
 
             .modal.active {
                 display: flex;
-                animation: fadeInBg 0.3s ease forwards;
+                animation: fadeIn 0.3s ease;
             }
 
-        @keyframes fadeInBg {
+        @keyframes fadeIn {
             from {
-                background: rgba(0,0,0,0);
+                opacity: 0;
             }
 
             to {
-                background: rgba(0,0,0,0.45);
+                opacity: 1;
             }
         }
 
         .modal-content {
             background: white;
-            padding: 30px 32px;
+            padding: 25px;
             border-radius: 14px;
             max-width: 420px;
             width: 100%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            font-weight: 600;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
             .modal-content h3 {
-                margin-top: 0;
                 color: #05668d;
-                margin-bottom: 22px;
-                font-weight: 800;
-                font-size: 1.9rem;
-                user-select: none;
+                margin-bottom: 20px;
+                font-size: clamp(1.5rem, 4vw, 1.9rem);
             }
 
             .modal-content label {
                 display: block;
-                margin: 12px 0 6px 0;
-                font-weight: 700;
+                margin: 12px 0 6px;
+                font-weight: 600;
                 color: #034a61;
             }
 
             .modal-content input,
             .modal-content select {
                 width: 100%;
-                padding: 10px 14px;
+                padding: 10px 12px;
                 font-size: 1rem;
                 border-radius: 7px;
                 border: 1.5px solid #a1c3d1;
-                transition: border-color 0.3s ease;
                 font-family: 'Inter', sans-serif;
-                font-weight: 600;
             }
 
                 .modal-content input:focus,
@@ -288,161 +275,127 @@
                 }
 
             .modal-content button[type="submit"] {
-                margin-top: 26px;
+                margin-top: 20px;
                 width: 100%;
                 background: #028090;
-                border: none;
                 color: white;
                 font-weight: 700;
-                font-size: 1.25rem;
-                padding: 14px 0;
-                border-radius: 10px;
+                padding: 12px 0;
+                border-radius: 8px;
                 cursor: pointer;
                 transition: background-color 0.3s ease;
+                border: none;
+                font-size: 1.1rem;
             }
 
-                .modal-content button[type="submit"]:hover,
-                .modal-content button[type="submit"]:focus {
+                .modal-content button[type="submit"]:hover {
                     background: #036b80;
-                    outline: none;
                 }
 
         .close-btn {
             margin-top: 12px;
             width: 100%;
             background: #a1c3d1;
-            border: none;
             color: #034a61;
             font-weight: 600;
-            font-size: 1.1rem;
-            padding: 12px 0;
-            border-radius: 10px;
+            padding: 10px 0;
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            border: none;
         }
 
-            .close-btn:hover,
-            .close-btn:focus {
+            .close-btn:hover {
                 background: #7ca6b5;
-                outline: none;
             }
-
-        .hidden {
-            display: none;
-        }
-
-        .total-box {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            background: #007bff;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
 
         #total-general {
             max-width: 680px;
-            margin: 0 auto 40px auto;
+            margin: 0 auto 40px;
             font-weight: 700;
-            font-size: 1.35rem;
+            font-size: clamp(1.1rem, 3vw, 1.35rem);
             color: #034a61;
-            user-select: none;
             text-align: right;
             padding: 0 20px;
+            width: 100%;
         }
 
         .floating-menu {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             z-index: 1100;
         }
 
         .menu-button {
             background: #05668d;
             color: white;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
+            border: none;
         }
 
             .menu-button:hover {
                 background: #034a61;
-                transform: scale(1.1) rotate(90deg);
-            }
-
-            .menu-button.active {
-                transform: rotate(90deg);
+                transform: scale(1.1);
             }
 
         .menu-options {
             position: absolute;
-            top: 60px;
+            top: 55px;
             right: 0;
             background: white;
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 10px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            min-width: 180px;
-            transform: translateY(-20px);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
+            min-width: 160px;
+            display: none;
             flex-direction: column;
             gap: 5px;
         }
 
             .menu-options.active {
-                transform: translateY(0);
-                opacity: 1;
-                visibility: visible;
+                display: flex;
+                animation: fadeIn 0.2s ease;
             }
 
             .menu-options button {
                 background: none;
                 border: none;
-                padding: 10px 12px;
+                padding: 8px 12px;
                 font-family: 'Inter', sans-serif;
-                font-size: 1rem;
                 color: #034a61;
                 cursor: pointer;
                 border-radius: 6px;
-                width: 100%;
                 text-align: left;
-                transition: all 0.2s ease;
                 display: flex;
                 align-items: center;
                 gap: 8px;
-                margin: 0;
+                transition: all 0.2s ease;
             }
 
                 .menu-options button:hover {
                     background: #f0faff;
-                    transform: translateX(5px);
                 }
 
                 .menu-options button i {
-                    font-size: 1.2rem;
+                    font-size: 1.1rem;
                 }
 
         #search-container {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0,0,0,0.45);
             display: none;
             justify-content: center;
@@ -453,44 +406,57 @@
 
             #search-container.active {
                 display: flex;
-                animation: fadeInBg 0.3s ease forwards;
+                animation: fadeIn 0.3s ease;
             }
 
         #search-form {
             background: white;
-            padding: 30px 32px;
+            padding: 25px;
             border-radius: 14px;
             max-width: 500px;
             width: 100%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            font-weight: 600;
             max-height: 80vh;
             overflow-y: auto;
         }
 
             #search-form h3 {
-                margin-top: 0;
                 color: #05668d;
-                margin-bottom: 22px;
-                font-weight: 800;
-                font-size: 1.9rem;
-                user-select: none;
+                margin-bottom: 20px;
+                font-size: clamp(1.5rem, 4vw, 1.9rem);
+                display: flex;
+                align-items: center;
+                gap: 10px;
             }
+
+            #search-form input {
+                width: 100%;
+                padding: 10px 12px;
+                border-radius: 7px;
+                border: 1.5px solid #a1c3d1;
+                margin-bottom: 10px;
+            }
+
+        #search-button {
+            background: #028090;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 7px;
+            cursor: pointer;
+            width: 100%;
+        }
 
         #search-results {
             margin-top: 20px;
             border-top: 1px solid #eee;
-            padding-top: 20px;
+            padding-top: 15px;
         }
 
         .search-result-item {
-            padding: 12px;
+            padding: 12px 0;
             border-bottom: 1px solid #f0f0f0;
         }
-
-            .search-result-item:hover {
-                background: #f7fcff;
-            }
 
         .search-result-header {
             font-weight: 700;
@@ -498,6 +464,8 @@
             margin-bottom: 5px;
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .search-result-details {
@@ -506,7 +474,7 @@
         }
 
             .search-result-details div {
-                margin-top: 3px;
+                margin-top: 5px;
             }
 
         .autocomplete {
@@ -516,8 +484,7 @@
         .autocomplete-items {
             position: absolute;
             border: 1px solid #a1c3d1;
-            border-bottom: none;
-            border-top: none;
+            border-radius: 0 0 7px 7px;
             z-index: 99;
             top: 100%;
             left: 0;
@@ -525,13 +492,13 @@
             max-height: 200px;
             overflow-y: auto;
             background: white;
-            border-radius: 0 0 7px 7px;
+            display: none;
         }
 
             .autocomplete-items div {
                 padding: 10px;
                 cursor: pointer;
-                border-bottom: 1px solid #a1c3d1;
+                border-bottom: 1px solid #eee;
             }
 
                 .autocomplete-items div:hover {
@@ -543,6 +510,7 @@
             color: white;
         }
 
+        /* Modo oscuro */
         body.dark-mode {
             background: #121212;
             color: #f0f0f0;
@@ -550,8 +518,11 @@
 
             body.dark-mode .section {
                 background: #1e1e1e;
-                color: #f0f0f0;
                 border-color: #444;
+            }
+
+            body.dark-mode .section-header {
+                background: #034a61;
             }
 
             body.dark-mode .section-content {
@@ -563,47 +534,28 @@
             }
 
             body.dark-mode thead {
-                background: #034a61;
+                background: #023548;
             }
 
-            body.dark-mode .modal-content {
-                background: #2b2b2b;
-                color: #f0f0f0;
-            }
-
-                body.dark-mode .modal-content label {
-                    color: #f0f0f0;
-                }
-
-                body.dark-mode .modal-content input,
-                body.dark-mode .modal-content select {
-                    background: #3b3b3b;
-                    color: #f0f0f0;
-                    border-color: #555;
-                }
-
+            body.dark-mode .modal-content,
+            body.dark-mode #search-form,
             body.dark-mode .menu-options {
                 background: #2b2b2b;
                 color: #f0f0f0;
             }
 
-                body.dark-mode .menu-options button {
+                body.dark-mode .modal-content label,
+                body.dark-mode #search-form label {
                     color: #f0f0f0;
                 }
 
-                    body.dark-mode .menu-options button:hover {
-                        background: #3b3b3b;
-                    }
-
-            body.dark-mode .date-container label {
-                color: #f0f0f0;
-            }
-
-            body.dark-mode .date-container input {
-                background: #3b3b3b;
-                color: #f0f0f0;
-                border-color: #555;
-            }
+                body.dark-mode .modal-content input,
+                body.dark-mode .modal-content select,
+                body.dark-mode #search-form input {
+                    background: #3b3b3b;
+                    color: #f0f0f0;
+                    border-color: #555;
+                }
 
             body.dark-mode .close-btn {
                 background: #3b3b3b;
@@ -613,26 +565,6 @@
                 body.dark-mode .close-btn:hover {
                     background: #4b4b4b;
                 }
-
-            body.dark-mode #search-results {
-                border-color: #444;
-            }
-
-            body.dark-mode .search-result-item {
-                border-color: #444;
-            }
-
-                body.dark-mode .search-result-item:hover {
-                    background: #3b3b3b;
-                }
-
-            body.dark-mode .search-result-header {
-                color: #48a6cb;
-            }
-
-            body.dark-mode .search-result-details {
-                color: #bbb;
-            }
 
             body.dark-mode .autocomplete-items {
                 background: #3b3b3b;
@@ -648,57 +580,45 @@
                         background-color: #4b4b4b;
                     }
 
+            body.dark-mode .search-result-header {
+                color: #48a6cb;
+            }
+
+            body.dark-mode .search-result-details {
+                color: #bbb;
+            }
+
+        /* Responsive */
         @media (max-width: 600px) {
-            header {
-                font-size: 2rem;
-                padding: 0 10px;
+            .container {
+                padding: 0 15px 50px;
             }
 
             .section-header {
-                font-size: 1.15rem;
-                padding: 16px 18px;
+                padding: 14px 16px;
             }
 
-            table th, table td {
-                font-size: 0.9rem;
-                padding: 8px 10px;
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.85rem;
             }
+
+                td:nth-child(5) {
+                    font-size: 0.75rem;
+                }
 
             .modal-content {
-                padding: 24px;
-                max-width: 95%;
+                padding: 20px;
             }
 
-                .modal-content h3 {
-                    font-size: 1.5rem;
-                    margin-bottom: 18px;
-                }
-
-                .modal-content button[type="submit"],
-                .close-btn {
-                    font-size: 1.05rem;
-                    padding: 12px 0;
-                }
-
-            .floating-menu {
-                top: 10px;
-                right: 10px;
-            }
-
-            .date-container {
-                flex-direction: column;
-                gap: 5px;
+            .menu-button {
+                width: 40px;
+                height: 40px;
+                font-size: 1.3rem;
             }
 
             .menu-options {
-                min-width: 160px;
-            }
-
-            .total-box {
-                bottom: 10px;
-                right: 10px;
-                font-size: 0.9rem;
-                padding: 8px 12px;
+                top: 50px;
             }
         }
     </style>
@@ -711,14 +631,13 @@
         <input type="date" id="calendar" />
     </div>
     <main class="container">
-        <section id="vip" class="section" aria-labelledby="vip-header" aria-expanded="false">
-            <button class="section-header accordion-btn" aria-controls="vip-content" id="vip-header" aria-expanded="false" aria-haspopup="true">
+        <section id="vip" class="section">
+            <button class="section-header" id="vip-header">
                 <span>Reservas VIP</span>
-                <span class="count" aria-live="polite" aria-atomic="true" id="vip-count">0</span>
+                <span class="count" id="vip-count">0</span>
             </button>
-            <div class="section-content content" id="vip-content" role="region" aria-hidden="true">
-                <table aria-describedby="vip-desc" role="table">
-                    <caption id="vip-desc" class="sr-only">Lista de reservas para zona VIP</caption>
+            <div class="section-content" id="vip-content">
+                <table>
                     <thead>
                         <tr>
                             <th>Nombre</th>
@@ -730,17 +649,16 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-                <button class="add-btn" aria-label="Agregar reserva en VIP">Agregar Reserva</button>
+                <button class="add-btn">Agregar Reserva</button>
             </div>
         </section>
-        <section id="regular" class="section" aria-labelledby="regular-header" aria-expanded="false">
-            <button class="section-header accordion-btn" aria-controls="regular-content" id="regular-header" aria-expanded="false" aria-haspopup="true">
+        <section id="regular" class="section">
+            <button class="section-header" id="regular-header">
                 <span>Reservas Regular</span>
-                <span class="count" aria-live="polite" aria-atomic="true" id="regular-count">0</span>
+                <span class="count" id="regular-count">0</span>
             </button>
-            <div class="section-content content" id="regular-content" role="region" aria-hidden="true">
-                <table aria-describedby="regular-desc" role="table">
-                    <caption id="regular-desc" class="sr-only">Lista de reservas para zona Regular</caption>
+            <div class="section-content" id="regular-content">
+                <table>
                     <thead>
                         <tr>
                             <th>Nombre</th>
@@ -752,17 +670,16 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-                <button class="add-btn" aria-label="Agregar reserva en Regular">Agregar Reserva</button>
+                <button class="add-btn">Agregar Reserva</button>
             </div>
         </section>
-        <section id="restaurante" class="section" aria-labelledby="restaurante-header" aria-expanded="false">
-            <button class="section-header accordion-btn" aria-controls="restaurante-content" id="restaurante-header" aria-expanded="false" aria-haspopup="true">
+        <section id="restaurante" class="section">
+            <button class="section-header" id="restaurante-header">
                 <span>Reservas Restaurante</span>
-                <span class="count" aria-live="polite" aria-atomic="true" id="restaurante-count">0</span>
+                <span class="count" id="restaurante-count">0</span>
             </button>
-            <div class="section-content content" id="restaurante-content" role="region" aria-hidden="true">
-                <table aria-describedby="restaurante-desc" role="table">
-                    <caption id="restaurante-desc" class="sr-only">Lista de reservas para zona Restaurante</caption>
+            <div class="section-content" id="restaurante-content">
+                <table>
                     <thead>
                         <tr>
                             <th>Nombre</th>
@@ -774,20 +691,19 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-                <button class="add-btn" aria-label="Agregar reserva en Restaurante">Agregar Reserva</button>
+                <button class="add-btn">Agregar Reserva</button>
             </div>
         </section>
     </main>
 
-    <div id="total-general" aria-live="polite" aria-atomic="true">
+    <div id="total-general">
         Total general de personas (sin reservas canceladas): 0
     </div>
 
-    <div id="form-container" class="modal" role="dialog" aria-modal="true" aria-labelledby="form-title" aria-describedby="form-desc">
+    <div id="form-container" class="modal">
         <div class="modal-content">
             <form id="form">
                 <h3 id="form-title">Agregar reserva</h3>
-                <p id="form-desc" class="sr-only">Formulario para agregar o editar una reserva.</p>
                 <div class="autocomplete">
                     <label for="input-nombre">Nombre</label>
                     <input id="input-nombre" name="nombre" type="text" autocomplete="off" required />
@@ -811,199 +727,152 @@
                 </select>
 
                 <button type="submit">Guardar</button>
-                <button type="button" class="close-btn" aria-label="Cerrar formulario">Cancelar</button>
+                <button type="button" class="close-btn">Cancelar</button>
             </form>
         </div>
     </div>
 
-    <!-- Modal de búsqueda -->
-    <div id="search-container" class="modal" role="dialog" aria-modal="true" aria-labelledby="search-title">
+    <div id="search-container" class="modal">
         <div class="modal-content">
             <form id="search-form">
-                <h3 id="search-title"><i class="fas fa-search"></i> Buscar Cliente</h3>
+                <h3><i class="fas fa-search"></i> Buscar Cliente</h3>
                 <label for="search-input">Nombre del cliente:</label>
                 <input type="text" id="search-input" placeholder="Escribe el nombre..." />
                 <button type="button" id="search-button">Buscar</button>
                 <div id="search-results"></div>
-                <button type="button" class="close-btn" style="margin-top: 20px;">Cerrar</button>
+                <button type="button" class="close-btn">Cerrar</button>
             </form>
         </div>
     </div>
 
-    <!-- Botón de opciones -->
     <div class="floating-menu">
-        <div class="menu-button" id="menu-button">⋮</div>
-        <div class="menu-options" id="menu-options">
+        <button class="menu-button">⋮</button>
+        <div class="menu-options">
             <button><i class="fas fa-moon"></i> Modo oscuro</button>
             <button><i class="fas fa-search"></i> Buscar cliente</button>
         </div>
     </div>
 
     <script>
-        // ===== CONFIGURACIÓN =====
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzf0YCqkbOZZ0I6DgnXzbBQJwP6E5CkHlbiTUxxsa5R-Kc7z9YQhgW9m9YpDIH47zg4/exec'; // Reemplaza con tu URL de Apps Script
+        // Configuración
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzf0YCqkbOZZ0I6DgnXzbBQJwP6E5CkHlbiTUxxsa5R-Kc7z9YQhgW9m9YpDIH47zg4/exec';
         const sections = ['vip', 'regular', 'restaurante'];
         let currentDate = new Date().toISOString().split('T')[0];
         let editSection = null;
         let editIndex = null;
         let data = {};
 
-        // ===== FUNCIONES PARA EL MENÚ =====
-        document.getElementById('menu-button').addEventListener('click', function (e) {
-            e.stopPropagation(); // Evita que el evento se propague al documento
-            const menu = document.getElementById('menu-options');
-            menu.classList.toggle('active');
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            initAccordions();
+            setupEventListeners();
+            loadAllData();
 
-            if (menu.classList.contains('active')) {
-                menu.style.transform = 'translateY(0)';
-                menu.style.opacity = '1';
-                menu.style.visibility = 'visible';
-            } else {
-                menu.style.transform = 'translateY(-20px)';
-                menu.style.opacity = '0';
-                menu.style.visibility = 'hidden';
-            }
-        });
-
-        // Cerrar menú al hacer clic fuera
-        document.addEventListener('click', function () {
-            const menu = document.getElementById('menu-options');
-            if (menu.classList.contains('active')) {
-                menu.classList.remove('active');
-                menu.style.transform = 'translateY(-20px)';
-                menu.style.opacity = '0';
-                menu.style.visibility = 'hidden';
-            }
-        });
-
-        // Evitar que el menú se cierre al hacer clic dentro de él
-        document.getElementById('menu-options').addEventListener('click', function (e) {
-            e.stopPropagation();
-        });
-
-        // Funcionalidad de los botones del menú
-        document.querySelectorAll('#menu-options button').forEach((button, index) => {
-            button.addEventListener('click', function () {
-                if (index === 0) {
-                    toggleDarkMode();
-                } else if (index === 1) {
-                    openSearch();
-                }
-
-                // Cerrar el menú después de seleccionar una opción
-                const menu = document.getElementById('menu-options');
-                menu.classList.remove('active');
-                menu.style.transform = 'translateY(-20px)';
-                menu.style.opacity = '0';
-                menu.style.visibility = 'hidden';
+            // Configurar calendario
+            const calendar = document.getElementById('calendar');
+            calendar.value = currentDate;
+            calendar.addEventListener('change', (e) => {
+                currentDate = e.target.value;
+                loadDataForDate(currentDate);
             });
+
+            // Iniciar modo oscuro si estaba activo
+            if (localStorage.getItem('darkMode') === '1') {
+                document.body.classList.add('dark-mode');
+            }
         });
 
-        // ===== FUNCIONES PARA GOOGLE SHEETS =====
-        async function fetchFromGoogleSheets(params = {}) {
-            try {
-                const queryString = new URLSearchParams(params).toString();
-                const response = await fetch(`${API_URL}?${queryString}`);
+        // Funciones principales
+        function initAccordions() {
+            sections.forEach(section => {
+                const header = document.getElementById(`${section}-header`);
+                const content = document.getElementById(`${section}-content`);
 
-                if (!response.ok) {
-                    throw new Error('Error en la respuesta del servidor');
+                header.addEventListener('click', () => {
+                    const isExpanded = content.classList.toggle('active');
+                    header.setAttribute('aria-expanded', isExpanded);
+                });
+            });
+        }
+
+        function setupEventListeners() {
+            // Botones agregar
+            sections.forEach(section => {
+                document.querySelector(`#${section} .add-btn`).addEventListener('click', () => {
+                    openAddForm(section);
+                });
+            });
+
+            // Formulario
+            document.getElementById('form').addEventListener('submit', handleFormSubmit);
+            document.querySelector('#form .close-btn').addEventListener('click', closeForm);
+
+            // Búsqueda
+            document.getElementById('search-button').addEventListener('click', searchClient);
+            document.querySelector('#search-form .close-btn').addEventListener('click', closeSearch);
+            document.getElementById('search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchClient();
                 }
+            });
 
-                return await response.json();
-            } catch (error) {
-                console.error('Error al comunicarse con Google Sheets:', error);
-                throw error;
-            }
+            // Menú flotante
+            const menuButton = document.querySelector('.menu-button');
+            const menuOptions = document.querySelector('.menu-options');
+
+            menuButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menuOptions.classList.toggle('active');
+            });
+
+            // Opciones del menú
+            document.querySelectorAll('.menu-options button').forEach((btn, index) => {
+                btn.addEventListener('click', () => {
+                    if (index === 0) toggleDarkMode();
+                    if (index === 1) openSearch();
+                    menuOptions.classList.remove('active');
+                });
+            });
+
+            // Cerrar menú al hacer clic fuera
+            document.addEventListener('click', () => {
+                menuOptions.classList.remove('active');
+            });
+
+            // Evitar que el menú se cierre al hacer clic dentro
+            menuOptions.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Autocompletado
+            document.getElementById('input-nombre').addEventListener('input', showAutocomplete);
+            document.addEventListener('click', (e) => {
+                if (e.target.id !== 'input-nombre') {
+                    document.getElementById('nombre-autocomplete').style.display = 'none';
+                }
+            });
         }
 
         async function loadAllData() {
             try {
-                const result = await fetchFromGoogleSheets({
-                    operation: 'getData'
-                });
-
-                data = result;
+                const response = await fetch(`${API_URL}?operation=getData`);
+                if (!response.ok) throw new Error('Error al cargar datos');
+                data = await response.json();
                 loadDataForDate(currentDate);
             } catch (error) {
-                console.error('Error al cargar datos:', error);
-                // Fallback a localStorage
+                console.error('Error:', error);
                 const savedData = localStorage.getItem('beachClubData');
-                if (savedData) {
-                    data = JSON.parse(savedData);
-                }
+                if (savedData) data = JSON.parse(savedData);
             }
-        }
-
-        async function saveAllData() {
-            localStorage.setItem('beachClubData', JSON.stringify(data));
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? '1' : '0');
-        }
-
-        async function addReservation(date, section, reservation) {
-            try {
-                await fetchFromGoogleSheets({
-                    operation: 'addReservation',
-                    date: date,
-                    section: section,
-                    reservation: JSON.stringify(reservation)
-                });
-
-                if (!data[date]) {
-                    data[date] = { vip: [], regular: [], restaurante: [] };
-                }
-                data[date][section].push(reservation);
-
-                return true;
-            } catch (error) {
-                console.error('Error al añadir reserva:', error);
-                throw error;
-            }
-        }
-
-        async function updateReservation(date, section, index, updatedReservation) {
-            try {
-                await fetchFromGoogleSheets({
-                    operation: 'updateReservation',
-                    date: date,
-                    section: section,
-                    index: index,
-                    reservation: JSON.stringify(updatedReservation)
-                });
-
-                data[date][section][index] = updatedReservation;
-
-                return true;
-            } catch (error) {
-                console.error('Error al actualizar reserva:', error);
-                throw error;
-            }
-        }
-
-        // ===== FUNCIONES PRINCIPALES =====
-        function getCurrentDateData() {
-            if (!data[currentDate]) {
-                data[currentDate] = {
-                    vip: [],
-                    regular: [],
-                    restaurante: []
-                };
-            }
-            return data[currentDate];
         }
 
         function loadDataForDate(date) {
             currentDate = date;
-            document.getElementById('calendar').value = date;
-
             if (!data[date]) {
-                data[date] = {
-                    vip: [],
-                    regular: [],
-                    restaurante: []
-                };
+                data[date] = { vip: [], regular: [], restaurante: [] };
             }
-
-            sections.forEach(sec => renderSection(sec));
+            sections.forEach(section => renderSection(section));
             updateTotalGeneral();
         }
 
@@ -1011,30 +880,19 @@
             const tbody = document.querySelector(`#${section} tbody`);
             tbody.innerHTML = '';
 
-            const currentData = getCurrentDateData();
-            const sectionData = currentData[section] || [];
+            const sectionData = data[currentDate]?.[section] || [];
 
-            sectionData.forEach((reserva, i) => {
+            sectionData.forEach((reserva, index) => {
                 const tr = document.createElement('tr');
-                tr.tabIndex = 0;
                 tr.className = reserva.estado;
-                tr.setAttribute('role', 'row');
-                tr.setAttribute('aria-label', `${reserva.nombre}, ${reserva.carnet || 'Sin carnet'}, ${reserva.hora}, ${reserva.personas} personas, estado: ${estadoTexto(reserva.estado)}`);
-
-                tr.addEventListener('click', () => openEditForm(section, i));
-                tr.addEventListener('keypress', e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        openEditForm(section, i);
-                    }
-                });
-
                 tr.innerHTML = `
           <td>${reserva.nombre}</td>
           <td>${reserva.carnet || ''}</td>
           <td>${reserva.hora}</td>
           <td>${reserva.personas}</td>
-          <td>${estadoTexto(reserva.estado)}</td>
+          <td>${getStatusText(reserva.estado)}</td>
         `;
+                tr.addEventListener('click', () => openEditForm(section, index));
                 tbody.appendChild(tr);
             });
 
@@ -1043,79 +901,35 @@
 
         function updateTotalGeneral() {
             let total = 0;
-            const currentData = getCurrentDateData();
-
-            sections.forEach(sec => {
-                (currentData[sec] || []).forEach(reserva => {
+            sections.forEach(section => {
+                (data[currentDate]?.[section] || []).forEach(reserva => {
                     if (reserva.estado !== 'cancelled') {
                         total += Number(reserva.personas);
                     }
                 });
             });
-
-            document.getElementById('total-general').textContent = `Total general de personas (sin reservas canceladas): ${total}`;
+            document.getElementById('total-general').textContent =
+                `Total general de personas (sin reservas canceladas): ${total}`;
         }
 
-        function estadoTexto(estado) {
-            switch (estado) {
-                case 'pending': return 'Pendiente';
-                case 'arrived': return 'Llegó';
-                case 'cancelled': return 'Cancelado';
-                default: return '';
-            }
-        }
-
-        function capitalize(text) {
-            return text.charAt(0).toUpperCase() + text.slice(1);
-        }
-
-        // ===== MANEJO DE FORMULARIOS =====
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-
-            const form = e.target;
-            const newReserva = {
-                nombre: form.nombre.value.trim(),
-                carnet: form.carnet.value.trim() || null,
-                hora: form.hora.value,
-                personas: Number(form.personas.value),
-                estado: form.estado.value
+        function getStatusText(status) {
+            const statusMap = {
+                pending: 'Pendiente',
+                arrived: 'Llegó',
+                cancelled: 'Cancelado'
             };
-
-            if (!newReserva.nombre || newReserva.nombre.length < 3) {
-                alert("El nombre debe tener al menos 3 caracteres");
-                return;
-            }
-
-            if (newReserva.personas < 1 || newReserva.personas > 20) {
-                alert("Número de personas inválido (1-20)");
-                return;
-            }
-
-            try {
-                if (editIndex !== null) {
-                    await updateReservation(currentDate, editSection, editIndex, newReserva);
-                } else {
-                    await addReservation(currentDate, editSection, newReserva);
-                }
-
-                renderSection(editSection);
-                updateTotalGeneral();
-                closeForm();
-            } catch (error) {
-                console.error('Error al guardar reserva:', error);
-                alert("Error al guardar la reserva. Por favor intenta nuevamente.");
-            }
+            return statusMap[status] || '';
         }
 
+        // Funciones de formulario
         function openAddForm(section) {
             editSection = section;
             editIndex = null;
 
             const form = document.getElementById('form');
             form.reset();
-            form.querySelector('h3').textContent = `Agregar reserva en ${capitalize(section)}`;
-            form.querySelector('button[type="submit"]').textContent = 'Agregar';
+            document.getElementById('form-title').textContent = `Agregar reserva en ${capitalize(section)}`;
+            document.querySelector('#form button[type="submit"]').textContent = 'Agregar';
 
             document.getElementById('form-container').classList.add('active');
             document.getElementById('input-nombre').focus();
@@ -1125,32 +939,91 @@
             editSection = section;
             editIndex = index;
 
-            const currentData = getCurrentDateData();
-            const item = currentData[section][index];
+            const reserva = data[currentDate][section][index];
             const form = document.getElementById('form');
 
-            form.querySelector('h3').textContent = `Editar reserva en ${capitalize(section)}`;
-            form.querySelector('button[type="submit"]').textContent = 'Guardar cambios';
+            document.getElementById('form-title').textContent = `Editar reserva en ${capitalize(section)}`;
+            document.querySelector('#form button[type="submit"]').textContent = 'Guardar cambios';
 
-            form['nombre'].value = item.nombre;
-            form['carnet'].value = item.carnet || '';
-            form['hora'].value = item.hora;
-            form['personas'].value = item.personas;
-            form['estado'].value = item.estado;
+            form.nombre.value = reserva.nombre;
+            form.carnet.value = reserva.carnet || '';
+            form.hora.value = reserva.hora;
+            form.personas.value = reserva.personas;
+            form.estado.value = reserva.estado;
 
             document.getElementById('form-container').classList.add('active');
-            document.getElementById('input-nombre').focus();
+            form.nombre.focus();
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const reserva = {
+                nombre: form.nombre.value.trim(),
+                carnet: form.carnet.value.trim() || null,
+                hora: form.hora.value,
+                personas: Number(form.personas.value),
+                estado: form.estado.value
+            };
+
+            // Validación
+            if (reserva.nombre.length < 3) {
+                alert('El nombre debe tener al menos 3 caracteres');
+                return;
+            }
+            if (reserva.personas < 1 || reserva.personas > 20) {
+                alert('Número de personas inválido (1-20)');
+                return;
+            }
+
+            try {
+                // Guardar en Google Sheets
+                const operation = editIndex !== null ? 'updateReservation' : 'addReservation';
+                const params = {
+                    operation,
+                    date: currentDate,
+                    section: editSection,
+                    reservation: JSON.stringify(reserva)
+                };
+
+                if (operation === 'updateReservation') {
+                    params.index = editIndex;
+                }
+
+                const response = await fetch(`${API_URL}?${new URLSearchParams(params)}`);
+                if (!response.ok) throw new Error('Error al guardar');
+
+                // Actualizar datos locales
+                if (!data[currentDate]) data[currentDate] = { vip: [], regular: [], restaurante: [] };
+
+                if (editIndex !== null) {
+                    data[currentDate][editSection][editIndex] = reserva;
+                } else {
+                    data[currentDate][editSection].push(reserva);
+                }
+
+                // Actualizar UI
+                renderSection(editSection);
+                updateTotalGeneral();
+                closeForm();
+
+                // Guardar en localStorage como backup
+                localStorage.setItem('beachClubData', JSON.stringify(data));
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al guardar la reserva. Por favor intenta nuevamente.');
+            }
         }
 
         function closeForm() {
             document.getElementById('form-container').classList.remove('active');
             editSection = null;
             editIndex = null;
-            document.getElementById('form').reset();
-            document.getElementById('nombre-autocomplete').innerHTML = '';
         }
 
-        // ===== BÚSQUEDA =====
+        // Búsqueda
         function openSearch() {
             document.getElementById('search-container').classList.add('active');
             document.getElementById('search-input').focus();
@@ -1161,9 +1034,6 @@
             document.getElementById('search-results').innerHTML = '';
         }
 
-        document.getElementById('search-button').addEventListener('click', searchClient);
-        document.querySelector('#search-form .close-btn').addEventListener('click', closeSearch);
-
         function searchClient() {
             const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
             if (!searchTerm) return;
@@ -1171,33 +1041,31 @@
             const resultsContainer = document.getElementById('search-results');
             resultsContainer.innerHTML = '';
 
-            let foundClients = {};
+            const foundClients = {};
 
+            // Buscar en todas las fechas y secciones
             for (const date in data) {
                 sections.forEach(section => {
-                    const reservations = data[date][section] || [];
-
-                    reservations.forEach(reservation => {
-                        if (reservation.nombre.toLowerCase().includes(searchTerm)) {
-                            if (!foundClients[reservation.nombre]) {
-                                foundClients[reservation.nombre] = {
-                                    carnet: reservation.carnet,
+                    (data[date][section] || []).forEach(reserva => {
+                        if (reserva.nombre.toLowerCase().includes(searchTerm)) {
+                            if (!foundClients[reserva.nombre]) {
+                                foundClients[reserva.nombre] = {
+                                    carnet: reserva.carnet,
                                     reservations: []
                                 };
                             }
-
-                            foundClients[reservation.nombre].reservations.push({
-                                date,
-                                section,
-                                hora: reservation.hora,
-                                personas: reservation.personas,
-                                estado: reservation.estado
+                            foundClients[reserva.nombre].reservations.push({
+                                date, section,
+                                hora: reserva.hora,
+                                personas: reserva.personas,
+                                estado: reserva.estado
                             });
                         }
                     });
                 });
             }
 
+            // Mostrar resultados
             if (Object.keys(foundClients).length === 0) {
                 resultsContainer.innerHTML = '<p>No se encontraron clientes con ese nombre.</p>';
                 return;
@@ -1216,70 +1084,74 @@
           <div class="search-result-details">
         `;
 
+                // Ordenar por fecha (más reciente primero)
                 client.reservations.sort((a, b) => new Date(b.date) - new Date(a.date));
 
                 client.reservations.forEach(res => {
-                    const fechaFormateada = new Date(res.date).toLocaleDateString('es-ES', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
+                    const fecha = new Date(res.date).toLocaleDateString('es-ES', {
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                     });
 
                     html += `
             <div>
-              <strong>${fechaFormateada}</strong> -
-              ${capitalize(res.section)} |
-              ${res.hora} |
-              ${res.personas} persona${res.personas > 1 ? 's' : ''} |
-              Estado: ${estadoTexto(res.estado)}
+              <strong>${fecha}</strong> - ${capitalize(res.section)} |
+              ${res.hora} | ${res.personas} persona${res.personas > 1 ? 's' : ''} |
+              ${getStatusText(res.estado)}
             </div>
           `;
                 });
 
-                html += `</div>`;
+                html += '</div>';
                 clientElement.innerHTML = html;
                 resultsContainer.appendChild(clientElement);
             }
         }
 
-        // ===== AUTCOMPLETADO =====
-        document.getElementById('input-nombre').addEventListener('input', function () {
-            const input = this.value.trim();
+        // Autocompletado
+        function showAutocomplete() {
+            const input = document.getElementById('input-nombre').value.trim();
             const autocompleteList = document.getElementById('nombre-autocomplete');
             autocompleteList.innerHTML = '';
 
-            if (input.length < 2) return;
+            if (input.length < 2) {
+                autocompleteList.style.display = 'none';
+                return;
+            }
 
             const names = new Set();
 
+            // Buscar nombres similares
             for (const date in data) {
                 sections.forEach(section => {
-                    const reservations = data[date][section] || [];
-                    reservations.forEach(reservation => {
-                        if (reservation.nombre.toLowerCase().includes(input.toLowerCase())) {
-                            names.add(reservation.nombre);
+                    (data[date][section] || []).forEach(reserva => {
+                        if (reserva.nombre.toLowerCase().includes(input.toLowerCase())) {
+                            names.add(reserva.nombre);
                         }
                     });
                 });
             }
 
-            if (names.size === 0) return;
+            if (names.size === 0) {
+                autocompleteList.style.display = 'none';
+                return;
+            }
 
+            // Mostrar sugerencias
             names.forEach(name => {
                 const item = document.createElement('div');
                 item.textContent = name;
-                item.addEventListener('click', function () {
+                item.addEventListener('click', () => {
                     document.getElementById('input-nombre').value = name;
+                    autocompleteList.style.display = 'none';
 
+                    // Buscar el carnet más reciente para este nombre
                     let latestReservation = null;
                     for (const date in data) {
                         sections.forEach(section => {
-                            const reservations = data[date][section] || [];
-                            reservations.forEach(reservation => {
-                                if (reservation.nombre === name && reservation.carnet) {
+                            (data[date][section] || []).forEach(reserva => {
+                                if (reserva.nombre === name && reserva.carnet) {
                                     if (!latestReservation || new Date(date) > new Date(latestReservation.date)) {
-                                        latestReservation = reservation;
+                                        latestReservation = reserva;
                                     }
                                 }
                             });
@@ -1289,85 +1161,23 @@
                     if (latestReservation) {
                         document.getElementById('input-carnet').value = latestReservation.carnet;
                     }
-
-                    autocompleteList.innerHTML = '';
                 });
                 autocompleteList.appendChild(item);
             });
-        });
 
-        document.addEventListener('click', function (e) {
-            if (e.target.id !== 'input-nombre') {
-                document.getElementById('nombre-autocomplete').innerHTML = '';
-            }
-        });
+            autocompleteList.style.display = 'block';
+        }
 
-        // ===== MODO OSCURO =====
+        // Modo oscuro
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
-            saveAllData();
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? '1' : '0');
         }
 
-        // ===== INICIALIZACIÓN =====
-        function init() {
-            // Configurar calendario
-            const calendar = document.getElementById('calendar');
-            calendar.value = currentDate;
-
-            calendar.addEventListener('change', (e) => {
-                currentDate = e.target.value;
-                loadDataForDate(currentDate);
-            });
-
-            // Inicializar acordeones
-            sections.forEach(sec => {
-                const btn = document.querySelector(`#${sec} > .accordion-btn`);
-                const content = document.getElementById(`${sec}-content`);
-
-                btn.addEventListener('click', () => {
-                    const expanded = btn.getAttribute('aria-expanded') === 'true';
-                    btn.setAttribute('aria-expanded', !expanded);
-                    content.classList.toggle('active');
-                    content.setAttribute('aria-hidden', expanded);
-                    document.getElementById(sec).classList.toggle('expanded');
-                });
-
-                btn.addEventListener('keydown', e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        btn.click();
-                    }
-                });
-            });
-
-            // Botones agregar
-            sections.forEach(sec => {
-                document.querySelector(`#${sec} .add-btn`).addEventListener('click', () => openAddForm(sec));
-            });
-
-            // Formulario
-            document.getElementById('form').addEventListener('submit', handleFormSubmit);
-            document.querySelector('#form .close-btn').addEventListener('click', closeForm);
-
-            // Búsqueda
-            document.getElementById('search-input').addEventListener('keypress', e => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    searchClient();
-                }
-            });
-
-            // Cargar datos
-            loadAllData();
-
-            // Inicializar modo oscuro
-            if (localStorage.getItem('darkMode') === '1') {
-                document.body.classList.add('dark-mode');
-            }
+        // Utilidades
+        function capitalize(text) {
+            return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
         }
-
-        // Iniciar la aplicación
-        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
