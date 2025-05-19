@@ -23,6 +23,7 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             padding: 10px;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         header {
@@ -34,6 +35,7 @@
             text-align: center;
             width: 100%;
             padding: 0 10px;
+            transition: color 0.3s ease;
         }
 
         .date-container {
@@ -48,6 +50,7 @@
             .date-container label {
                 font-weight: 600;
                 color: #034a61;
+                transition: color 0.3s ease;
             }
 
             .date-container input {
@@ -56,6 +59,8 @@
                 border: 1px solid #a1c3d1;
                 font-family: 'Inter', sans-serif;
                 font-size: 1rem;
+                background: white;
+                transition: all 0.3s ease;
             }
 
         .container {
@@ -70,7 +75,7 @@
             background: #ffffff;
             box-shadow: 0 8px 14px rgba(0,0,0,0.07);
             overflow: hidden;
-            transition: box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             border: 1px solid #ccc;
         }
 
@@ -141,6 +146,7 @@
             text-align: left;
             font-size: clamp(0.8rem, 2vw, 1rem);
             word-break: break-word;
+            transition: all 0.3s ease;
         }
 
         tbody tr {
@@ -182,6 +188,7 @@
             align-items: center;
             box-shadow: 0 0 10px #ef476faa;
             margin-left: 12px;
+            transition: all 0.3s ease;
         }
 
         .add-btn {
@@ -195,6 +202,7 @@
             width: 100%;
             transition: all 0.3s ease;
             margin: 10px 0 0;
+            font-weight: 600;
         }
 
             .add-btn:hover,
@@ -202,6 +210,7 @@
                 background: #05668d;
                 transform: scale(1.02);
                 outline: none;
+                box-shadow: 0 4px 12px rgba(5, 102, 141, 0.3);
             }
 
         .modal {
@@ -216,14 +225,16 @@
             align-items: center;
             z-index: 1000;
             padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
             .modal.active {
                 display: flex;
-                animation: fadeIn 0.3s ease;
+                opacity: 1;
             }
 
-        @keyframes fadeIn {
+        @keyframes modalFadeIn {
             from {
                 opacity: 0;
             }
@@ -242,55 +253,66 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             max-height: 90vh;
             overflow-y: auto;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
         }
 
-            .modal-content h3 {
-                color: #05668d;
-                margin-bottom: 20px;
-                font-size: clamp(1.5rem, 4vw, 1.9rem);
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-content h3 {
+            color: #05668d;
+            margin-bottom: 20px;
+            font-size: clamp(1.5rem, 4vw, 1.9rem);
+            transition: color 0.3s ease;
+        }
+
+        .modal-content label {
+            display: block;
+            margin: 12px 0 6px;
+            font-weight: 600;
+            color: #034a61;
+            transition: color 0.3s ease;
+        }
+
+        .modal-content input,
+        .modal-content select {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 1rem;
+            border-radius: 7px;
+            border: 1.5px solid #a1c3d1;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+            .modal-content input:focus,
+            .modal-content select:focus {
+                outline: none;
+                border-color: #028090;
+                box-shadow: 0 0 6px #028090bb;
             }
 
-            .modal-content label {
-                display: block;
-                margin: 12px 0 6px;
-                font-weight: 600;
-                color: #034a61;
+        .modal-content button[type="submit"] {
+            margin-top: 20px;
+            width: 100%;
+            background: #028090;
+            color: white;
+            font-weight: 700;
+            padding: 12px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1.1rem;
+        }
+
+            .modal-content button[type="submit"]:hover {
+                background: #036b80;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(3, 107, 128, 0.3);
             }
-
-            .modal-content input,
-            .modal-content select {
-                width: 100%;
-                padding: 10px 12px;
-                font-size: 1rem;
-                border-radius: 7px;
-                border: 1.5px solid #a1c3d1;
-                font-family: 'Inter', sans-serif;
-            }
-
-                .modal-content input:focus,
-                .modal-content select:focus {
-                    outline: none;
-                    border-color: #028090;
-                    box-shadow: 0 0 6px #028090bb;
-                }
-
-            .modal-content button[type="submit"] {
-                margin-top: 20px;
-                width: 100%;
-                background: #028090;
-                color: white;
-                font-weight: 700;
-                padding: 12px 0;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-                border: none;
-                font-size: 1.1rem;
-            }
-
-                .modal-content button[type="submit"]:hover {
-                    background: #036b80;
-                }
 
         .close-btn {
             margin-top: 12px;
@@ -301,12 +323,14 @@
             padding: 10px 0;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             border: none;
         }
 
             .close-btn:hover {
                 background: #7ca6b5;
+                transform: translateY(-2px);
+                box-shadow: 0 2px 6px rgba(124, 166, 181, 0.3);
             }
 
         #total-general {
@@ -318,6 +342,7 @@
             text-align: right;
             padding: 0 20px;
             width: 100%;
+            transition: color 0.3s ease;
         }
 
         .floating-menu {
@@ -341,11 +366,19 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
             border: none;
+            position: relative;
+            z-index: 1101;
         }
 
             .menu-button:hover {
                 background: #034a61;
                 transform: scale(1.1);
+                box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+            }
+
+            .menu-button.active {
+                transform: rotate(90deg);
+                background: #034a61;
             }
 
         .menu-options {
@@ -360,11 +393,16 @@
             display: none;
             flex-direction: column;
             gap: 5px;
+            transform: translateY(-10px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1100;
         }
 
             .menu-options.active {
                 display: flex;
-                animation: fadeIn 0.2s ease;
+                opacity: 1;
+                transform: translateY(0);
             }
 
             .menu-options button {
@@ -384,10 +422,13 @@
 
                 .menu-options button:hover {
                     background: #f0faff;
+                    transform: translateX(3px);
                 }
 
                 .menu-options button i {
                     font-size: 1.1rem;
+                    width: 20px;
+                    text-align: center;
                 }
 
         #search-container {
@@ -402,11 +443,13 @@
             align-items: center;
             z-index: 1000;
             padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
             #search-container.active {
                 display: flex;
-                animation: fadeIn 0.3s ease;
+                opacity: 1;
             }
 
         #search-form {
@@ -418,24 +461,28 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             max-height: 80vh;
             overflow-y: auto;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
         }
 
-            #search-form h3 {
-                color: #05668d;
-                margin-bottom: 20px;
-                font-size: clamp(1.5rem, 4vw, 1.9rem);
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
+        #search-container.active #search-form {
+            transform: translateY(0);
+        }
 
-            #search-form input {
-                width: 100%;
-                padding: 10px 12px;
-                border-radius: 7px;
-                border: 1.5px solid #a1c3d1;
-                margin-bottom: 10px;
-            }
+        #search-form h3 {
+            color: #05668d;
+            margin-bottom: 20px;
+            font-size: clamp(1.5rem, 4vw, 1.9rem);
+        }
+
+        #search-form input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 7px;
+            border: 1.5px solid #a1c3d1;
+            margin-bottom: 10px;
+            font-family: 'Inter', sans-serif;
+        }
 
         #search-button {
             background: #028090;
@@ -445,7 +492,15 @@
             border-radius: 7px;
             cursor: pointer;
             width: 100%;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
+
+            #search-button:hover {
+                background: #036b80;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(3, 107, 128, 0.3);
+            }
 
         #search-results {
             margin-top: 20px;
@@ -456,7 +511,12 @@
         .search-result-item {
             padding: 12px 0;
             border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
         }
+
+            .search-result-item:hover {
+                transform: translateX(3px);
+            }
 
         .search-result-header {
             font-weight: 700;
@@ -475,7 +535,13 @@
 
             .search-result-details div {
                 margin-top: 5px;
+                padding: 5px 0;
+                border-bottom: 1px dashed #eee;
             }
+
+                .search-result-details div:last-child {
+                    border-bottom: none;
+                }
 
         .autocomplete {
             position: relative;
@@ -493,12 +559,14 @@
             overflow-y: auto;
             background: white;
             display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
             .autocomplete-items div {
                 padding: 10px;
                 cursor: pointer;
                 border-bottom: 1px solid #eee;
+                transition: all 0.2s ease;
             }
 
                 .autocomplete-items div:hover {
@@ -510,11 +578,60 @@
             color: white;
         }
 
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #05668d;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1200;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .toast.show {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            .toast.error {
+                background: #ef476f;
+            }
+
+            .toast.success {
+                background: #06d6a0;
+            }
+
+            .toast i {
+                font-size: 1.2rem;
+            }
+
         /* Modo oscuro */
         body.dark-mode {
             background: #121212;
             color: #f0f0f0;
         }
+
+            body.dark-mode header {
+                color: #48a6cb;
+            }
+
+            body.dark-mode .date-container label {
+                color: #a1c3d1;
+            }
+
+            body.dark-mode .date-container input {
+                background: #2b2b2b;
+                color: #f0f0f0;
+                border-color: #444;
+            }
 
             body.dark-mode .section {
                 background: #1e1e1e;
@@ -537,12 +654,34 @@
                 background: #023548;
             }
 
+            body.dark-mode tbody tr.pending {
+                background: #1a3a4a;
+                color: #a1c3d1;
+            }
+
+            body.dark-mode tbody tr.arrived {
+                background: #1e3a1e;
+                color: #a6d8a6;
+            }
+
+            body.dark-mode tbody tr.cancelled {
+                background: #3a1e1e;
+                color: #d8a6a6;
+            }
+
             body.dark-mode .modal-content,
             body.dark-mode #search-form,
             body.dark-mode .menu-options {
                 background: #2b2b2b;
                 color: #f0f0f0;
+                border: 1px solid #444;
             }
+
+                body.dark-mode .modal-content h3,
+                body.dark-mode #search-form h3,
+                body.dark-mode .search-result-header {
+                    color: #48a6cb;
+                }
 
                 body.dark-mode .modal-content label,
                 body.dark-mode #search-form label {
@@ -588,6 +727,18 @@
                 color: #bbb;
             }
 
+                body.dark-mode .search-result-details div {
+                    border-color: #444;
+                }
+
+            body.dark-mode #total-general {
+                color: #a1c3d1;
+            }
+
+            body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
+                filter: invert(1);
+            }
+
         /* Responsive */
         @media (max-width: 600px) {
             .container {
@@ -619,6 +770,12 @@
 
             .menu-options {
                 top: 50px;
+            }
+
+            .toast {
+                width: 90%;
+                text-align: center;
+                justify-content: center;
             }
         }
     </style>
@@ -717,7 +874,7 @@
                 <input id="input-hora" name="hora" type="time" required />
 
                 <label for="input-personas">Personas</label>
-                <input id="input-personas" name="personas" type="number" min="1" required />
+                <input id="input-personas" name="personas" type="number" min="1" max="20" required />
 
                 <label for="input-estado">Estado</label>
                 <select id="input-estado" name="estado" required>
@@ -748,10 +905,12 @@
     <div class="floating-menu">
         <button class="menu-button">⋮</button>
         <div class="menu-options">
-            <button><i class="fas fa-moon"></i> Modo oscuro</button>
-            <button><i class="fas fa-search"></i> Buscar cliente</button>
+            <button id="dark-mode-toggle"><i class="fas fa-moon"></i> Modo oscuro</button>
+            <button id="search-toggle"><i class="fas fa-search"></i> Buscar cliente</button>
         </div>
     </div>
+
+    <div class="toast" id="toast"></div>
 
     <script>
         // Configuración
@@ -761,11 +920,13 @@
         let editSection = null;
         let editIndex = null;
         let data = {};
+        let isOnline = true;
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', () => {
             initAccordions();
             setupEventListeners();
+            checkConnection();
             loadAllData();
 
             // Configurar calendario
@@ -779,6 +940,7 @@
             // Iniciar modo oscuro si estaba activo
             if (localStorage.getItem('darkMode') === '1') {
                 document.body.classList.add('dark-mode');
+                document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-sun"></i> Modo claro';
             }
         });
 
@@ -823,21 +985,18 @@
 
             menuButton.addEventListener('click', (e) => {
                 e.stopPropagation();
+                menuButton.classList.toggle('active');
                 menuOptions.classList.toggle('active');
             });
 
             // Opciones del menú
-            document.querySelectorAll('.menu-options button').forEach((btn, index) => {
-                btn.addEventListener('click', () => {
-                    if (index === 0) toggleDarkMode();
-                    if (index === 1) openSearch();
-                    menuOptions.classList.remove('active');
-                });
-            });
+            document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
+            document.getElementById('search-toggle').addEventListener('click', openSearch);
 
             // Cerrar menú al hacer clic fuera
             document.addEventListener('click', () => {
                 menuOptions.classList.remove('active');
+                document.querySelector('.menu-button').classList.remove('active');
             });
 
             // Evitar que el menú se cierre al hacer clic dentro
@@ -852,18 +1011,42 @@
                     document.getElementById('nombre-autocomplete').style.display = 'none';
                 }
             });
+
+            // Verificar conexión periódicamente
+            setInterval(checkConnection, 30000);
+        }
+
+        function checkConnection() {
+            isOnline = navigator.onLine;
+            if (!isOnline) {
+                showToast('Estás trabajando sin conexión. Los cambios se sincronizarán cuando vuelvas a estar en línea.', 'error');
+            }
         }
 
         async function loadAllData() {
             try {
+                if (!isOnline) {
+                    const savedData = localStorage.getItem('beachClubData');
+                    if (savedData) {
+                        data = JSON.parse(savedData);
+                        loadDataForDate(currentDate);
+                    }
+                    return;
+                }
+
                 const response = await fetch(`${API_URL}?operation=getData`);
                 if (!response.ok) throw new Error('Error al cargar datos');
                 data = await response.json();
+                localStorage.setItem('beachClubData', JSON.stringify(data));
                 loadDataForDate(currentDate);
             } catch (error) {
                 console.error('Error:', error);
                 const savedData = localStorage.getItem('beachClubData');
-                if (savedData) data = JSON.parse(savedData);
+                if (savedData) {
+                    data = JSON.parse(savedData);
+                    loadDataForDate(currentDate);
+                }
+                showToast('Error al cargar datos. Usando caché local.', 'error');
             }
         }
 
@@ -931,6 +1114,12 @@
             document.getElementById('form-title').textContent = `Agregar reserva en ${capitalize(section)}`;
             document.querySelector('#form button[type="submit"]').textContent = 'Agregar';
 
+            // Establecer hora actual como predeterminada
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('input-hora').value = `${hours}:${minutes}`;
+
             document.getElementById('form-container').classList.add('active');
             document.getElementById('input-nombre').focus();
         }
@@ -969,38 +1158,51 @@
 
             // Validación
             if (reserva.nombre.length < 3) {
-                alert('El nombre debe tener al menos 3 caracteres');
+                showToast('El nombre debe tener al menos 3 caracteres', 'error');
                 return;
             }
             if (reserva.personas < 1 || reserva.personas > 20) {
-                alert('Número de personas inválido (1-20)');
+                showToast('Número de personas inválido (1-20)', 'error');
                 return;
             }
 
-            try {
-                // Guardar en Google Sheets
-                const operation = editIndex !== null ? 'updateReservation' : 'addReservation';
-                const params = {
-                    operation,
-                    date: currentDate,
-                    section: editSection,
-                    reservation: JSON.stringify(reserva)
-                };
-
-                if (operation === 'updateReservation') {
-                    params.index = editIndex;
+            // Verificar duplicados (solo para nuevas reservas)
+            if (editIndex === null) {
+                const hasDuplicate = checkDuplicateReservation(reserva);
+                if (hasDuplicate) {
+                    showToast('Esta persona ya tiene una reserva para esta fecha y sección', 'error');
+                    return;
                 }
+            }
 
-                const response = await fetch(`${API_URL}?${new URLSearchParams(params)}`);
-                if (!response.ok) throw new Error('Error al guardar');
+            try {
+                // Guardar en Google Sheets si hay conexión
+                if (isOnline) {
+                    const operation = editIndex !== null ? 'updateReservation' : 'addReservation';
+                    const params = {
+                        operation,
+                        date: currentDate,
+                        section: editSection,
+                        reservation: JSON.stringify(reserva)
+                    };
+
+                    if (operation === 'updateReservation') {
+                        params.index = editIndex;
+                    }
+
+                    const response = await fetch(`${API_URL}?${new URLSearchParams(params)}`);
+                    if (!response.ok) throw new Error('Error al guardar');
+                }
 
                 // Actualizar datos locales
                 if (!data[currentDate]) data[currentDate] = { vip: [], regular: [], restaurante: [] };
 
                 if (editIndex !== null) {
                     data[currentDate][editSection][editIndex] = reserva;
+                    showToast('Reserva actualizada correctamente', 'success');
                 } else {
                     data[currentDate][editSection].push(reserva);
+                    showToast('Reserva agregada correctamente', 'success');
                 }
 
                 // Actualizar UI
@@ -1008,13 +1210,26 @@
                 updateTotalGeneral();
                 closeForm();
 
-                // Guardar en localStorage como backup
+                // Guardar en localStorage
                 localStorage.setItem('beachClubData', JSON.stringify(data));
+
+                // Si estaba sin conexión, intentar sincronizar
+                if (!isOnline) {
+                    showToast('Reserva guardada localmente. Se sincronizará cuando haya conexión.', 'success');
+                }
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error al guardar la reserva. Por favor intenta nuevamente.');
+                showToast('Error al guardar la reserva. Por favor intenta nuevamente.', 'error');
             }
+        }
+
+        function checkDuplicateReservation(newReserva) {
+            const sectionData = data[currentDate]?.[editSection] || [];
+            return sectionData.some(reserva =>
+                reserva.nombre.toLowerCase() === newReserva.nombre.toLowerCase() &&
+                reserva.estado !== 'cancelled'
+            );
         }
 
         function closeForm() {
@@ -1027,16 +1242,22 @@
         function openSearch() {
             document.getElementById('search-container').classList.add('active');
             document.getElementById('search-input').focus();
+            document.querySelector('.menu-button').classList.remove('active');
+            document.querySelector('.menu-options').classList.remove('active');
         }
 
         function closeSearch() {
             document.getElementById('search-container').classList.remove('active');
             document.getElementById('search-results').innerHTML = '';
+            document.getElementById('search-input').value = '';
         }
 
         function searchClient() {
             const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
-            if (!searchTerm) return;
+            if (!searchTerm) {
+                showToast('Por favor ingresa un nombre para buscar', 'error');
+                return;
+            }
 
             const resultsContainer = document.getElementById('search-results');
             resultsContainer.innerHTML = '';
@@ -1094,7 +1315,7 @@
 
                     html += `
             <div>
-              <strong>${fecha}</strong> - ${capitalize(res.section)} |
+              <strong>${capitalizeFirstLetter(fecha)}</strong> - ${capitalize(res.section)} |
               ${res.hora} | ${res.personas} persona${res.personas > 1 ? 's' : ''} |
               ${getStatusText(res.estado)}
             </div>
@@ -1171,12 +1392,42 @@
         // Modo oscuro
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? '1' : '0');
+            const darkModeBtn = document.getElementById('dark-mode-toggle');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', '1');
+                darkModeBtn.innerHTML = '<i class="fas fa-sun"></i> Modo claro';
+            } else {
+                localStorage.setItem('darkMode', '0');
+                darkModeBtn.innerHTML = '<i class="fas fa-moon"></i> Modo oscuro';
+            }
+            document.querySelector('.menu-button').classList.remove('active');
+            document.querySelector('.menu-options').classList.remove('active');
+        }
+
+        // Notificaciones toast
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = '';
+
+            let icon = '';
+            if (type === 'error') icon = '<i class="fas fa-exclamation-circle"></i>';
+            if (type === 'success') icon = '<i class="fas fa-check-circle"></i>';
+
+            toast.innerHTML = `${icon} ${message}`;
+            toast.className = `toast ${type} show`;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
         }
 
         // Utilidades
         function capitalize(text) {
             return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+        }
+
+        function capitalizeFirstLetter(text) {
+            return text.charAt(0).toUpperCase() + text.slice(1);
         }
     </script>
 </body>
